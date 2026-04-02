@@ -1,0 +1,80 @@
+/* Font modern */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #eb74dd 0%, #aeefac 100%);
+  height: 100vh;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card {
+  width: 350px;
+  padding: 30px 25px;
+  background: #ffffff;
+  border-radius: 15px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  text-align: center; /* biar teks rapi dari kiri */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+/* custom.css */
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+h1 {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  color: #333333;
+  text-align: center; /* judul tetap di tengah */
+}
+.foto {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin: 0 auto 20px auto;
+  display: block;
+  border: 4px solid #d1cf83;
+}
+/* styling untuk teks biodata */
+.biodata-item {
+  margin: 8px 0;
+  font-size: 1rem;
+  color: #333333;
+}
+
+.biodata-item .label {
+  font-weight: 600;
+  color: #007BFF;
+  margin-right: 5px;
+}
+
+/* Tombol field */
+.btn-field {
+  padding: 10px 20px;            /* lebih besar */
+  border-radius: 8px;            /* sudut membulat */
+  border: none;                   /* hilangkan border default */
+  background-color: #eabadb;     /* biru */
+  color: #000000;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;           /* smooth hover */
+  width: 100%;                     /* full width card */
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* shadow ringan */
+}
+
+.btn-field:hover {
+  background-color: #a8e7ad;      /* warna hover */
+  box-shadow: 0 6px 8px rgba(0,0,0,0.15); /* shadow lebih menonjol */
+}
