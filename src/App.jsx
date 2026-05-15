@@ -1,56 +1,34 @@
-import Header from "./components/Header"
-import Hero from "./components/Hero"
-import BestMenu from "./components/BestMenu"
-import MemberBenefit from "./components/MemberBenefit"
-import Newsletter from "./components/Newsletter"
-import FloatingButton from "./components/FloatingButton"
-import React, { Suspense } from 'react'
-import { Routes, Route } from 'react-router-dom'
-import Error404 from "./pages/Error404"
+import { Routes, Route } from "react-router-dom";
+import MainLayout from "./layouts/MainLayout";
+import Dashboard from "./pages/Dashboard";
+import Error404 from "./pages/Error404";
 
-import AuthLayout from './layouts/AuthLayout'
-import Loading from './components/Loading'
+// 💡 IMPORT HALAMAN AUTH (Pastikan path foldernya benar sesuai struktur src/pages/auth/)
+import Login from "./pages/auth/Login";
+import Register from "./pages/auth/Register";
+import Forgot from "./pages/auth/Forgot";
+import Logout from "./pages/auth/Logout";
 
-const Login = React.lazy(() => import('./pages/auth/Login'))
-const Register = React.lazy(() => import('./pages/auth/Register'))
-const Forgot = React.lazy(() => import('./pages/auth/Forgot'))
-function HomePage() {
-  return (
-    <div>
-
-      <Header />
-
-      <Hero />
-
-      <BestMenu />
-
-      <MemberBenefit />
-
-      <Newsletter />
-
-      <FloatingButton />
-
-    </div>
-  )
-}
 export default function App() {
-
   return (
+    <Routes>
+      {/* 1. RUTE DASHBOARD UTAMA (Menggunakan MainLayout yang ada Sidebar + Header) */}
+      <Route element={<MainLayout />}>
+        <Route path="/" element={<Dashboard activeTab="dashboard" />} />
+        <Route path="/menu" element={<Dashboard activeTab="menu" />} />
+        <Route path="/orders" element={<Dashboard activeTab="orders" />} />
+        <Route path="/analytics" element={<Dashboard activeTab="analytics" />} />
+        <Route path="/settings" element={<Dashboard activeTab="settings" />} />
+      </Route>
 
-    <Suspense fallback={<Loading />}>
+      {/* 2. RUTE UTK HALAMAN AUTH (Biasanya TIDAK pakai MainLayout / tanpa sidebar kasir) */}
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/forgot" element={<Forgot />} />
+      <Route path="/logout" element={<Logout />} />
 
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route element={<AuthLayout />}>
-            <Route path="/login" element={<Login />}/>
-            <Route path="/register" element={<Register />} />
-            <Route path="/forgot" element={<Forgot />} />
-            <Route path="/learn-more" element={<Error404 />} />
-            <Route path="*" element={<Error404 />} />
-        </Route>
-      </Routes>
-
-    </Suspense>
-
-  )
+      {/* 3. FALLBACK JIKA URL TIDAK DIKENALI */}
+      <Route path="*" element={<Error404 />} />
+    </Routes>
+  );
 }

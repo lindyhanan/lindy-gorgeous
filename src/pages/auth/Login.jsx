@@ -1,79 +1,67 @@
-import { useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Login() {
+  const navigate = useNavigate();
 
-  const navigate = useNavigate()
-
-  const [data, setData] = useState({
-    email:"",
-    password:""
-  })
-
-  const handleChange = (e) => {
-    setData({
-      ...data,
-      [e.target.name]: e.target.value
-    })
-  }
-
-  const handleSubmit = (e) => {
-    e.preventDefault()
-
-    localStorage.setItem("token", "login-success")
-
-    navigate("/")
-  }
+  const handleLoginSubmit = (e) => {
+    e.preventDefault();
+    alert("Login Berhasil!");
+    navigate("/"); // Redirect balik ke dashboard kasir setelah sukses
+  };
 
   return (
+    <div className="auth-screen-wrapper">
+      <div className="auth-card-box">
+        <div className="auth-brand-logo">YourForm</div>
 
-    <div className="auth-form-wrap">
+        {/* Tab Penunjuk Aktif */}
+        <div className="auth-nav-tabs">
+          <Link to="/login" className="auth-tab-link active">Login</Link>
+          <Link to="/register" className="auth-tab-link">Register</Link>
+        </div>
 
-      <h2 className="auth-title">
-        Login Account
-      </h2>
+        <form onSubmit={handleLoginSubmit}>
+          {/* Email input */}
+          <div className="auth-input-group">
+            <span className="auth-field-icon">✉️</span>
+            <input 
+              type="email" 
+              placeholder="Email Address" 
+              className="auth-input-control" 
+              required 
+            />
+          </div>
 
-      <p className="auth-subtitle">
-        Masuk ke akun coffee member kamu
-      </p>
+          {/* Password input */}
+          <div className="auth-input-group">
+            <span className="auth-field-icon">🔒</span>
+            <input 
+              type="password" 
+              placeholder="Password" 
+              className="auth-input-control" 
+              required 
+            />
+          </div>
 
-      <form
-        onSubmit={handleSubmit}
-        className="auth-form"
-      >
+          {/* Opsi Ingat Saya & Lupa Sandi */}
+          <div className="auth-options-row">
+            <label className="auth-checkbox-label">
+              <input type="checkbox" /> Remember me
+            </label>
+            <Link to="/forgot" className="auth-forgot-link">Forgot password?</Link>
+          </div>
 
-        <input
-          type="text"
-          name="email"
-          placeholder="Email"
-          onChange={handleChange}
-        />
+          <button type="submit" className="auth-submit-btn">Login</button>
+        </form>
 
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          onChange={handleChange}
-        />
-
-        <button type="submit">
-          Login
-        </button>
-
-      </form>
-
-      <div className="auth-links">
-
-        <Link to="/forgot">
-          Forgot Password
-        </Link>
-
-        <Link to="/register">
-          Create Account
-        </Link>
-
+        {/* Akses Cepat Sosial Media */}
+        <div className="auth-social-divider">Or login with</div>
+        <div className="auth-social-buttons">
+          <button className="auth-social-icon-btn" title="Facebook" onClick={() => alert("FB Login")}>📘</button>
+          <button className="auth-social-icon-btn" title="Google" onClick={() => alert("Google Login")}>🔴</button>
+          <button className="auth-social-icon-btn" title="Twitter" onClick={() => alert("Twitter Login")}>🌐</button>
+        </div>
       </div>
-
     </div>
-  )
+  );
 }

@@ -1,231 +1,237 @@
-const menu = [
-  {
-    name: "Caramel Latte",
-    image:
-      "https://images.unsplash.com/photo-1517701604599-bb29b565090c?q=80&w=1200",
-    price: "Rp 28.000",
-    rating: "4.9",
-  },
-  {
-    name: "Espresso",
-    image:
-      "https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?q=80&w=1200",
-    price: "Rp 18.000",
-    rating: "4.8",
-  },
-  {
-    name: "Mocha Coffee",
-    image:
-      "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=1200",
-    price: "Rp 32.000",
-    rating: "4.7",
-  },
-]
+import { useState } from "react";
+import Header from "../components/Header";
+import CategoryTabs from "../components/CategoryTabs";
+import ProductCard from "../components/ProductCard";
+import OrderPanel from "../components/OrderPanel";
 
-export default function Dashboard() {
+// Mock Data untuk Riwayat Pesanan (/orders)
+const MOCK_ORDERS = [
+  { id: "#order2022", time: "14:32", items: "2x Cappuccino, 1x Latte", total: 114000, type: "Delivery", status: "Selesai" },
+  { id: "#order2021", time: "13:15", items: "1x Macchiato, 1x Croissant", total: 46000, type: "Dine In", status: "Diproses" },
+  { id: "#order2020", time: "11:02", items: "3x Espresso", total: 72000, type: "Pick Up", status: "Selesai" },
+  { id: "#order2019", time: "09:45", items: "1x Mocha, 2x Almond Slice", total: 38000, type: "Dine In", status: "Batal" },
+];
+
+// Database Menu Kasir Terpusat
+const ALL_PRODUCTS = [
+  { id: 1, name: "Macchiato", rating: 4.7, reviews: 230, price: 24000, img: "https://images.unsplash.com/photo-1485808191679-5f86510bd9d7?w=300&q=80", category: "Kopi", stock: 45 },
+  { id: 2, name: "Mocha", rating: 4.5, reviews: 105, price: 24000, img: "https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=300&q=80", category: "Kopi", stock: 32 },
+  { id: 3, name: "Espresso", rating: 4.8, reviews: 35, price: 24000, img: "https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?w=300&q=80", category: "Kopi", stock: 80 },
+  { id: 4, name: "Latte", rating: 4.6, reviews: 88, price: 24000, img: "https://images.unsplash.com/photo-1534778101976-62847782c213?w=300&q=80", category: "Kopi", stock: 15 },
+  { id: 5, name: "Cappuccino", rating: 4.9, reviews: 120, price: 44000, img: "https://images.unsplash.com/photo-1511381939415-e44015466834?w=300&q=80", category: "Kopi", stock: 22 },
+  { id: 6, name: "Choco Topping", rating: 4.4, reviews: 90, price: 5000, img: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=300&q=80", category: "Topping", stock: 120 },
+  { id: 7, name: "Almond Slice", rating: 4.6, reviews: 45, price: 7000, img: "https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=300&q=80", category: "Topping", stock: 60 },
+  { id: 8, name: "Arabica Gayo", rating: 4.9, reviews: 75, price: 85000, img: "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=300&q=80", category: "Bubuk Kopi", stock: 18 },
+  { id: 9, name: "Croissant", rating: 4.7, reviews: 110, price: 22000, img: "https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=300&q=80", category: "Snack", stock: 25 }
+];
+
+export default function Dashboard({ activeTab = "dashboard" }) {
+  const [activeCat, setActiveCat] = useState("Kopi");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [cartItems, setCartItems] = useState([]);
+  
+  // State interaktif tambahan untuk halaman Settings
+  const [taxRate, setTaxRate] = useState(10);
+  const [printerStatus, setPrinterStatus] = useState("Terhubung");
+
+  const handleAdd = (id) => {
+    setCartItems((prev) => {
+      const exist = prev.find((item) => item.id === id);
+      if (exist) {
+        return prev.map((item) => item.id === id ? { ...item, qty: item.qty + 1 } : item);
+      } else {
+        const product = ALL_PRODUCTS.find((p) => p.id === id);
+        return [...prev, { ...product, qty: 1 }];
+      }
+    });
+  };
+
+  const handleRemove = (id) => {
+    setCartItems((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, qty: item.qty - 1 } : item)).filter((item) => item.qty > 0)
+    );
+  };
+
+  const filteredProducts = ALL_PRODUCTS.filter((p) => {
+    const matchesCategory = p.category === activeCat;
+    const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
+
   return (
-    <div>
+    <div className="dashboard-container">
+      <Header query={searchQuery} setQuery={setSearchQuery} />
 
-      {/* HERO */}
-      <section className="min-h-screen flex items-center px-10 lg:px-24">
+      {/* ── 1. DASHBOARD UTAMA (KASIR) ── */}
+      {activeTab === "dashboard" && (
+        <div className="dashboard-content-grid">
+          <div className="menu-left-side">
+            <CategoryTabs active={activeCat} onChange={setActiveCat} />
+            <h2 className="section-title">Menu {activeCat}</h2>
+            <div className="products-grid">
+              {filteredProducts.map((prod) => {
+                const inCart = cartItems.find((c) => c.id === prod.id);
+                const currentQty = inCart ? inCart.qty : 0;
+                return (
+                  <ProductCard
+                    key={prod.id}
+                    item={{ ...prod, price: "Rp " + prod.price.toLocaleString("id-ID") + ",00" }}
+                    qty={currentQty}
+                    onAdd={handleAdd}
+                    onRemove={handleRemove}
+                    onTambah={() => handleAdd(prod.id)}
+                  />
+                );
+              })}
+            </div>
+          </div>
+          <div className="order-right-side">
+            <OrderPanel items={cartItems} />
+          </div>
+        </div>
+      )}
 
-        <div className="max-w-2xl">
+      {/* ── 2. MANAJEMEN MENU (/menu) ── */}
+      {activeTab === "menu" && (
+        <div className="subview-panel">
+          <div className="panel-header-inline">
+            <h2>📋 Manajemen Stok & Menu</h2>
+            <button className="panel-action-btn">+ Tambah Item Baru</button>
+          </div>
+          <table className="custom-table">
+            <thead>
+              <tr>
+                <th>Gambar</th>
+                <th>Nama Produk</th>
+                <th>Kategori</th>
+                <th>Harga</th>
+                <th>Sisa Stok</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              {ALL_PRODUCTS.map((prod) => (
+                <tr key={prod.id}>
+                  <td><img src={prod.img} alt={prod.name} className="table-img-thumb" /></td>
+                  <td className="font-bold">{prod.name}</td>
+                  <td><span className="badge-category">{prod.category}</span></td>
+                  <td>Rp {prod.price.toLocaleString("id-ID")}</td>
+                  <td>
+                    <span className={`stock-indicator ${prod.stock < 20 ? "low" : "safe"}`}>
+                      {prod.stock} pcs
+                    </span>
+                  </td>
+                  <td>
+                    <button className="action-icon-btn" onClick={() => alert(`Edit ${prod.name}`)}>✏️</button>
+                    <button className="action-icon-btn delete" onClick={() => alert(`Hapus ${prod.name}`)}>🗑️</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
-          <p className="text-[#c89b63] tracking-[4px] uppercase mb-5">
-            Premium Coffee Experience
-          </p>
+      {/* ── 3. RIWAYAT ORDERS (/orders) ── */}
+      {activeTab === "orders" && (
+        <div className="subview-panel">
+          <h2>◷ Riwayat Transaksi Kasir</h2>
+          <table className="custom-table">
+            <thead>
+              <tr>
+                <th>ID Order</th>
+                <th>Waktu</th>
+                <th>Daftar Belanjaan</th>
+                <th>Total Bayar</th>
+                <th>Tipe</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {MOCK_ORDERS.map((order) => (
+                <tr key={order.id}>
+                  <td className="font-bold text-terracotta">{order.id}</td>
+                  <td>{order.time} WIB</td>
+                  <td className="text-muted">{order.items}</td>
+                  <td>Rp {order.total.toLocaleString("id-ID")}</td>
+                  <td><span className="badge-type">{order.type}</span></td>
+                  <td>
+                    <span className={`status-pill ${order.status.toLowerCase()}`}>
+                      {order.status}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
-          <h1 className="text-5xl lg:text-7xl font-bold leading-tight mb-8">
-            Enjoy Your
-            <span className="text-[#c89b63]"> Coffee </span>
-            Before Your Activity
-          </h1>
-
-          <p className="text-gray-300 text-lg leading-8 mb-10">
-            Lindy Coffee menghadirkan kopi premium dengan cita rasa
-            autentik untuk menemani setiap aktivitas harimu.
-          </p>
-
-          <div className="flex gap-5 flex-wrap">
-
-            <button className="bg-[#c89b63] hover:bg-[#ddb17b] transition px-8 py-4 rounded-full font-semibold">
-              Order Now
-            </button>
-
-            <button className="border border-[#c89b63] text-[#c89b63] hover:bg-[#c89b63] hover:text-white transition px-8 py-4 rounded-full font-semibold">
-              View Menu
-            </button>
-
+      {/* ── 4. ANALYTICS VIEW (/analytics) ── */}
+      {activeTab === "analytics" && (
+        <div className="analytics-grid-layout">
+          <div className="stats-cards-wrapper">
+            <div className="metric-card">
+              <span className="metric-title">Total Pendapatan</span>
+              <h3>Rp 12.5M</h3>
+              <span className="metric-trend up">+12.4% dari bulan lalu</span>
+            </div>
+            <div className="metric-card">
+              <span className="metric-title">Pesanan Masuk</span>
+              <h3>245 Orders</h3>
+              <span className="metric-trend up">+8.2% hari ini</span>
+            </div>
+            <div className="metric-card">
+              <span className="metric-title">Pelanggan Baru</span>
+              <h3>1.2K Users</h3>
+              <span className="metric-trend down">-2.1% minggu ini</span>
+            </div>
           </div>
 
-        </div>
-
-      </section>
-
-      {/* BEST MENU */}
-      <section className="px-10 lg:px-24 py-24">
-
-        <div className="flex justify-between items-center mb-14 flex-wrap gap-4">
-
-          <div>
-            <p className="text-[#c89b63] uppercase tracking-[3px] mb-3">
-              Best Seller
-            </p>
-
-            <h2 className="text-4xl font-bold">
-              Popular Menu
-            </h2>
+          <div className="chart-placeholder-box">
+            <h4>📈 Grafik Grafik Tren Penjualan (Revenue Analytics)</h4>
+            <div className="visual-bar-chart">
+              <div className="bar" style={{ height: "40%" }} data-month="Jan"></div>
+              <div className="bar" style={{ height: "65%" }} data-month="Feb"></div>
+              <div className="bar" style={{ height: "85%" }} data-month="Mar"></div>
+              <div className="bar" style={{ height: "50%" }} data-month="Apr"></div>
+              <div className="bar active" style={{ height: "95%" }} data-month="Mei"></div>
+            </div>
           </div>
-
-          <button className="text-[#c89b63] border border-[#c89b63] px-5 py-3 rounded-full hover:bg-[#c89b63] hover:text-white transition">
-            See All Menu
-          </button>
-
         </div>
+      )}
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-
-          {menu.map((item, index) => (
-            <div
-              key={index}
-              className="bg-[#1b1511] rounded-[28px] overflow-hidden border border-[#2b2119] hover:-translate-y-2 transition duration-300"
-            >
-
-              <img
-                src={item.image}
-                alt={item.name}
-                className="w-full h-[260px] object-cover"
+      {/* ── 5. SETTINGS (/settings) ── */}
+      {activeTab === "settings" && (
+        <div className="settings-grid-layout">
+          <div className="subview-panel">
+            <h2>⚙️ Konfigurasi Sistem Kasir</h2>
+            <div className="settings-row">
+              <label>Besar Pajak (%)</label>
+              <input 
+                type="number" 
+                value={taxRate} 
+                onChange={(e) => setTaxRate(e.target.value)} 
+                className="settings-input"
               />
-
-              <div className="p-7">
-
-                <div className="flex justify-between items-center mb-3">
-
-                  <h3 className="text-2xl font-semibold">
-                    {item.name}
-                  </h3>
-
-                  <span className="text-[#c89b63] font-bold">
-                    ⭐ {item.rating}
-                  </span>
-
-                </div>
-
-                <p className="text-gray-400 leading-7 mb-6">
-                  Fresh premium coffee with high quality beans
-                  and aesthetic serving style.
-                </p>
-
-                <div className="flex justify-between items-center">
-
-                  <span className="text-2xl font-bold text-[#c89b63]">
-                    {item.price}
-                  </span>
-
-                  <button className="bg-[#c89b63] hover:bg-[#ddb17b] transition px-5 py-3 rounded-full font-semibold">
-                    Buy
-                  </button>
-
-                </div>
-
-              </div>
-
             </div>
-          ))}
-
-        </div>
-
-      </section>
-
-      {/* CRM SECTION */}
-      <section className="px-10 lg:px-24 py-24">
-
-        <div className="bg-[#1a1410] rounded-[40px] p-10 lg:p-16 border border-[#2b2119]">
-
-          <div className="grid lg:grid-cols-2 gap-14 items-center">
-
-            <div>
-
-              <p className="text-[#c89b63] uppercase tracking-[3px] mb-4">
-                Coffee CRM
-              </p>
-
-              <h2 className="text-4xl lg:text-5xl font-bold leading-tight mb-6">
-                Join Membership &
-                Get Special Rewards
-              </h2>
-
-              <p className="text-gray-400 leading-8 mb-8">
-                Dapatkan promo eksklusif, loyalty point,
-                cashback, dan penawaran spesial setiap minggu.
-              </p>
-
-              <div className="flex gap-5 flex-wrap">
-
-                <button className="bg-[#c89b63] hover:bg-[#ddb17b] transition px-8 py-4 rounded-full font-semibold">
-                  Join Member
-                </button>
-
-                <a
-                  href="https://wa.me/628123456789"
-                  target="_blank"
-                  className="border border-[#c89b63] text-[#c89b63]
-                  hover:bg-[#c89b63] hover:text-white
-                  transition px-8 py-4 rounded-full font-semibold"
-                >
-                  WhatsApp Us
-                </a>
-
-              </div>
-
+            <div className="settings-row">
+              <label>Status Printer Struk</label>
+              <select 
+                value={printerStatus} 
+                onChange={(e) => setPrinterStatus(e.target.value)}
+                className="settings-input"
+              >
+                <option value="Terhubung">Terhubung (Thermal 80mm)</option>
+                <option value="Terputus">Terputus / Offline</option>
+              </select>
             </div>
-
-            <div className="grid grid-cols-2 gap-5">
-
-              <div className="bg-[#241c16] rounded-3xl p-7">
-                <h3 className="text-5xl font-bold text-[#c89b63] mb-3">
-                  12K+
-                </h3>
-                <p className="text-gray-400">
-                  Loyal Customers
-                </p>
-              </div>
-
-              <div className="bg-[#241c16] rounded-3xl p-7">
-                <h3 className="text-5xl font-bold text-[#c89b63] mb-3">
-                  4.9
-                </h3>
-                <p className="text-gray-400">
-                  Google Rating
-                </p>
-              </div>
-
-              <div className="bg-[#241c16] rounded-3xl p-7">
-                <h3 className="text-5xl font-bold text-[#c89b63] mb-3">
-                  50+
-                </h3>
-                <p className="text-gray-400">
-                  Premium Menu
-                </p>
-              </div>
-
-              <div className="bg-[#241c16] rounded-3xl p-7">
-                <h3 className="text-5xl font-bold text-[#c89b63] mb-3">
-                  24/7
-                </h3>
-                <p className="text-gray-400">
-                  Customer Service
-                </p>
-              </div>
-
-            </div>
-
+            <button className="panel-action-btn" onClick={() => alert("Pengaturan disimpan!")}>
+              Simpan Perubahan
+            </button>
           </div>
-
         </div>
-
-      </section>
-
+      )}
     </div>
-  )
+  );
 }

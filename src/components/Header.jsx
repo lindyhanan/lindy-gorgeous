@@ -1,79 +1,67 @@
-import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { Link } from "react-router-dom"; // 💡 Import Link untuk navigasi halaman auth
 
-export default function Header() {
-  const [openProfile, setOpenProfile] = useState(false);
+export default function Header({ query, setQuery }) {
+  // State untuk mengontrol buka/tutup dropdown menu auth
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-
-    navigate("/login");
+  // Fungsi toggle dropdown saat avatar diklik
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
   };
 
   return (
-    <header className="topbar">
-      {/* LOGO */}
-      <div className="sidebar-logo">
-        <div className="logo-icon">☕</div>
-
-        <h1 className="logo-text">Coffe Shop</h1>
+    <header className="top-header">
+      <div className="header-left">
+        <span className="brand-sub">Selamat datang di Doge Caffe Dashboard!</span>
+        <h1 className="brand-title">Always give the best service</h1>
       </div>
 
-      {/* NAVIGATION */}
-      <nav className="sidebar-nav">
-        <a href="#home" className="nav-btn">
-          Home
-        </a>
+      <div className="header-right">
+        <div className="search-box">
+          <span className="search-icon">🔍</span>
+          <input
+            className="search-input"
+            type="text"
+            placeholder="cari menu"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+        </div>
 
-        <a href="#menu" className="nav-btn">
-          Best Menu
-        </a>
+        <button className="notif-btn">
+          🔔
+          <span className="notif-badge">3</span>
+        </button>
 
-        <a href="#benefit" className="nav-btn">
-          Member Benefit
-        </a>
+        {/* 💡 AREA AVATAR: Ditambahkan event onClick dan class wrapper relatif */}
+        <div className="user-avatar-wrapper">
+          <div className="user-avatar" onClick={toggleDropdown}>
+            <img src="https://i.imgur.com/yXOvdOS.jpeg" alt="User Avatar" />
+            <div className="user-info">
+              <span className="user-role">admin</span>
+              <span className="user-name">Congo ▾</span> {/* Menambahkan panah kecil indikator */}
+            </div>
+          </div>
 
-        <a href="#newsletter" className="nav-btn">
-          Newsletter
-        </a>
-      </nav>
-
-      {/* RIGHT */}
-      <div className="topbar-right">
-        {/* PROFILE */}
-        <div className="relative">
-          <button
-            onClick={() => setOpenProfile(!openProfile)}
-            className="profile-btn"
-          >
-            <img
-              src="/assets/profile.png"
-              alt="Profile"
-              className="profile-img"
-            />
-          </button>
-
-          {openProfile && (
-            <div className="profile-dropdown">
-              <Link to="/login" className="dropdown-item">
-                Login
+          {/* 💡 MENU DROPDOWN: Hanya muncul jika state isDropdownOpen bernilai true */}
+          {isDropdownOpen && (
+            <div className="auth-dropdown">
+              <Link to="/login" className="dropdown-item" onClick={() => setIsDropdownOpen(false)}>
+                🔑 Login
               </Link>
-
-              <Link to="/register" className="dropdown-item">
-                Register
+              <Link to="/register" className="dropdown-item" onClick={() => setIsDropdownOpen(false)}>
+                📝 Register
               </Link>
-
-              <button
-                onClick={handleLogout}
-                className="dropdown-item logout-btn"
-              >
-                Logout
-              </button>
+              <div className="dropdown-divider"></div>
+              <Link to="/logout" className="dropdown-item logout-item" onClick={() => setIsDropdownOpen(false)}>
+                🚪 Logout
+              </Link>
             </div>
           )}
         </div>
+
+        <button className="add-btn" onClick={() => alert("Tambah menu baru")}>+ Add menu</button>
       </div>
     </header>
   );

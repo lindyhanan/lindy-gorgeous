@@ -1,16 +1,16 @@
-import { Outlet } from "react-router-dom"
-import Header from "../components/Header"
+import Sidebar from "../components/Sidebar";
+import { Outlet } from "react-router-dom";
 
 export default function MainLayout() {
   return (
-    <div className="bg-[#0f0b08] text-white min-h-screen">
+    <div className="app-layout">
+      {/* Sisi Kiri: Sidebar */}
+      <Sidebar />
 
-      <Header />
-
-      <main className="pt-28">
+      {/* Sisi Kanan: Area Konten Utama */}
+      <div className="main-wrapper">
         <Outlet />
-      </main>
-
+      </div>
     </div>
-  )
+  );
 }
