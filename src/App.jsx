@@ -2,7 +2,10 @@ import { Routes, Route } from "react-router-dom";
 import MainLayout from "./layouts/MainLayout";
 import Dashboard from "./pages/Dashboard";
 import Error404 from "./pages/Error404";
+<<<<<<< HEAD
 import Components from "./pages/Components";
+=======
+>>>>>>> 3d93e1fbf9eb9ea88d4c4fb1573108f2661a17fd
 
 // 💡 IMPORT HALAMAN AUTH (Pastikan path foldernya benar sesuai struktur src/pages/auth/)
 import Login from "./pages/auth/Login";
@@ -17,7 +20,10 @@ export default function App() {
       <Route element={<MainLayout />}>
         <Route path="/" element={<Dashboard activeTab="dashboard" />} />
         <Route path="/menu" element={<Dashboard activeTab="menu" />} />
+<<<<<<< HEAD
         <Route path="/components" element={<Components />} />
+=======
+>>>>>>> 3d93e1fbf9eb9ea88d4c4fb1573108f2661a17fd
         <Route path="/orders" element={<Dashboard activeTab="orders" />} />
         <Route path="/analytics" element={<Dashboard activeTab="analytics" />} />
         <Route path="/settings" element={<Dashboard activeTab="settings" />} />

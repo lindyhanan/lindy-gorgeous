@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { FaWhatsapp } from "react-icons/fa";
 
 export default function FloatingButton() {
@@ -29,4 +30,12 @@ export default function FloatingButton() {
       <FaWhatsapp size={30} />
     </a>
   );
+=======
+export default function FloatingButton() {
+  return (
+    <button className='fixed bottom-6 right-6 w-16 h-16 rounded-full bg-[#8B5E3C] text-2xl shadow-lg'>
+      +
+    </button>
+  )
+>>>>>>> 3d93e1fbf9eb9ea88d4c4fb1573108f2661a17fd
 }

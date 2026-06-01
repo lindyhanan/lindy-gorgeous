@@ -1,7 +1,10 @@
 /* ============================================
    DOGE CAFFE DASHBOARD — index.css (Mockup Theme)
    ============================================ */
+<<<<<<< HEAD
 @import "tailwindcss";
+=======
+>>>>>>> 3d93e1fbf9eb9ea88d4c4fb1573108f2661a17fd
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
 
 *, *::before, *::after {
@@ -70,6 +73,21 @@ img {
   background: var(--bg-base);
 }
 
+<<<<<<< HEAD
+=======
+/* ===== SIDEBAR ===== */
+.sidebar {
+  width: var(--sidebar-w);
+  min-width: var(--sidebar-w);
+  background: var(--bg-surface);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px 0;
+  gap: 30px;
+  border-right: 2px solid rgba(0,0,0,0.05);
+}
+>>>>>>> 3d93e1fbf9eb9ea88d4c4fb1573108f2661a17fd
 
 .sidebar-logo {
   margin-bottom: 10px;
@@ -466,6 +484,22 @@ img {
   background: #855347;
 }
 
+<<<<<<< HEAD
+=======
+/* ===== ORDER PANEL ===== */
+.order-panel {
+  width: 340px;
+  min-width: 340px;
+  background: var(--bg-card);
+  border-radius: var(--r-lg);
+  padding: 24px;
+  color: var(--text-dark);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+>>>>>>> 3d93e1fbf9eb9ea88d4c4fb1573108f2661a17fd
 
 .order-header {
   display: flex;
@@ -671,6 +705,19 @@ img {
   padding: 25px 0;
 }
 
+<<<<<<< HEAD
+=======
+/* ── 3. SEARCH BAR HEADER (Slightly darker container) ── */
+.search-box {
+  display: flex;
+  align-items: center;
+  background-color: #5c534c; /* 💡 Warna cokelat abu gelap figma */
+  border-radius: 16px;
+  padding: 8px 16px;
+  width: 300px;
+}
+
+>>>>>>> 3d93e1fbf9eb9ea88d4c4fb1573108f2661a17fd
 .search-input {
   background: none;
   border: none;
@@ -712,6 +759,20 @@ img {
 }
 
 /* ── 5. KARTU MENU / PRODUCT CARD ── */
+<<<<<<< HEAD
+=======
+.menu-card {
+  background-color: #e6e3df; /* 💡 Samakan jadi off-white cream melengkung */
+  color: #2b2b2b;            /* Tulisan menu menjadi gelap agar kontras */
+  border-radius: 24px;
+  padding: 20px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+>>>>>>> 3d93e1fbf9eb9ea88d4c4fb1573108f2661a17fd
 
 /* Deskripsi teks pelengkap di dalam kartu */
 .card-desc {
@@ -799,6 +860,20 @@ img {
   }
 }
 
+<<<<<<< HEAD
+=======
+/* ── DEKORASI KARTU MENU (CARD KASIR) ── */
+.menu-card {
+  background-color: #e5e5e5;
+  color: #222222;
+  border-radius: 24px;
+  padding: 20px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+>>>>>>> 3d93e1fbf9eb9ea88d4c4fb1573108f2661a17fd
 
 .card-actions {
   position: absolute;
@@ -961,6 +1036,17 @@ img {
   padding: 20px 30px;
 }
 
+<<<<<<< HEAD
+=======
+/* Tata Letak Header */
+.top-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+>>>>>>> 3d93e1fbf9eb9ea88d4c4fb1573108f2661a17fd
 /* Pembagian 2 Kolom di Dashboard (Menu vs Pesanan) */
 .dashboard-grid {
   display: grid;
@@ -1255,6 +1341,7 @@ img {
 
 .auth-social-icon-btn:hover {
   transform: scale(1.15);
+<<<<<<< HEAD
 }
 
 /* ==================================
@@ -1493,4 +1580,6 @@ img {
 .crm-modal-close {
   font-size: 22px;
   cursor: pointer;
+=======
+>>>>>>> 3d93e1fbf9eb9ea88d4c4fb1573108f2661a17fd
 }
