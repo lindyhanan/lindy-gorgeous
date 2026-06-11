@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom"; // 💡 Import Link untuk navigasi halaman auth
+import { Link } from "react-router-dom";
 
 export default function Header({ query, setQuery }) {
   // State untuk mengontrol buka/tutup dropdown menu auth
@@ -12,6 +12,229 @@ export default function Header({ query, setQuery }) {
 
   return (
     <header className="top-header">
+      <style>{`
+        /* ── COMPONENT: TOP HEADER CONTAINER ── */
+        .top-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          width: 100%;
+          padding-bottom: 15px;
+          box-sizing: border-box;
+          font-family: 'Poppins', sans-serif;
+          background-color: transparent;
+        }
+
+        /* ── KIRI: TEKS SELAMAT DATANG ── */
+        .header-left {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+        }
+
+        .brand-sub {
+          font-size: 14px;
+          color: #a3a3a3;
+          font-weight: 400;
+        }
+
+        .brand-title {
+          font-size: 28px;
+          font-weight: 700;
+          color: #ffffff;
+          margin: 0;
+          letter-spacing: -0.5px;
+        }
+
+        /* ── KANAN: WIDGET CONTROL NAVIGATION ── */
+        .header-right {
+          display: flex;
+          align-items: center;
+          gap: 20px; /* Jarak antar elemen agar berderet rapi ke kanan */
+        }
+
+        /* ⚙️ SEARCH BOX (Kapsul Gelap Bulat) */
+        .search-box {
+          display: flex;
+          align-items: center;
+          background-color: #2a2929; /* Warna abu gelap kapsul search */
+          border-radius: 50px;
+          padding: 10px 20px;
+          width: 260px;
+          box-sizing: border-box;
+        }
+
+        .search-icon {
+          font-size: 16px;
+          margin-right: 10px;
+          color: #a3a3a3;
+        }
+
+        .search-input {
+          background: transparent;
+          border: none;
+          outline: none;
+          color: #ffffff;
+          font-size: 14px;
+          width: 100%;
+          font-family: 'Poppins', sans-serif;
+        }
+
+        .search-input::placeholder {
+          color: #757575;
+        }
+
+        /* ⚙️ NOTIFICATION BUTTON */
+        .notif-btn {
+          background-color: #2a2929;
+          border: none;
+          width: 45px;
+          height: 45px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          position: relative;
+          font-size: 18px;
+          transition: background 0.2s;
+        }
+
+        .notif-btn:hover {
+          background-color: #3a3939;
+        }
+
+        .notif-badge {
+          position: absolute;
+          top: -2px;
+          right: -2px;
+          background-color: #d87d56; /* Warna oranye/cokelat badge notif */
+          color: #ffffff;
+          font-size: 11px;
+          font-weight: 700;
+          border-radius: 50%;
+          width: 18px;
+          height: 18px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border: 2px solid #3a3838;
+        }
+
+        /* ⚙️ USER AVATAR & INFO WRAPPER */
+        .user-avatar-wrapper {
+          position: relative; /* Menjaga dropdown agar presisi di bawah profil */
+        }
+
+        .user-avatar {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          cursor: pointer;
+          padding: 4px 8px;
+          border-radius: 12px;
+          transition: background 0.2s;
+        }
+
+        .user-avatar:hover {
+          background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Memaksa foto profil bulat kecil estetik sesuai gambar */
+        .user-avatar img {
+          width: 42px;
+          height: 42px;
+          border-radius: 50%;
+          object-fit: cover;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .user-info {
+          display: flex;
+          flex-direction: column;
+          line-height: 1.2;
+        }
+
+        .user-role {
+          font-size: 11px;
+          color: #a3a3a3;
+          text-transform: lowercase;
+        }
+
+        .user-name {
+          font-size: 14px;
+          font-weight: 600;
+          color: #ffffff;
+        }
+
+        /* ⚙️ DROPDOWN MENU AUTH (LOGIN/REGISTER/LOGOUT) */
+        .auth-dropdown {
+          position: absolute;
+          top: 55px;
+          right: 0;
+          background-color: #2a2929;
+          border: 1px solid #444;
+          border-radius: 12px;
+          width: 160px;
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+          z-index: 999;
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .dropdown-item {
+          padding: 12px 16px;
+          font-size: 13px;
+          color: #ffffff;
+          text-decoration: none;
+          font-family: 'Poppins', sans-serif;
+          transition: background 0.2s;
+        }
+
+        .dropdown-item:hover {
+          background-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .dropdown-divider {
+          height: 1px;
+          background-color: #444;
+          margin: 4px 0;
+        }
+
+        .logout-item {
+          color: #ff5252;
+        }
+
+        .logout-item:hover {
+          background-color: rgba(255, 82, 82, 0.1);
+        }
+
+        /* ⚙️ BUTTON: + ADD MENU */
+        .add-btn {
+          background-color: #ffffff;
+          color: #2c2520;
+          border: none;
+          border-radius: 50px;
+          padding: 12px 24px;
+          font-size: 14px;
+          font-weight: 600;
+          cursor: pointer;
+          font-family: 'Poppins', sans-serif;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+          transition: transform 0.1s, background-color 0.2s;
+        }
+
+        .add-btn:hover {
+          background-color: #f0f0f0;
+          transform: translateY(-1px);
+        }
+
+        .add-btn:active {
+          transform: translateY(0);
+        }
+      `}</style>
+
       <div className="header-left">
         <span className="brand-sub">Selamat datang di Doge Caffe Dashboard!</span>
         <h1 className="brand-title">Always give the best service</h1>
@@ -34,17 +257,17 @@ export default function Header({ query, setQuery }) {
           <span className="notif-badge">3</span>
         </button>
 
-        {/* 💡 AREA AVATAR: Ditambahkan event onClick dan class wrapper relatif */}
+        {/* AREA AVATAR DENGAN CHANGER TOGGLE DROPDOWN */}
         <div className="user-avatar-wrapper">
           <div className="user-avatar" onClick={toggleDropdown}>
             <img src="https://i.imgur.com/yXOvdOS.jpeg" alt="User Avatar" />
             <div className="user-info">
               <span className="user-role">admin</span>
-              <span className="user-name">Congo ▾</span> {/* Menambahkan panah kecil indikator */}
+              <span className="user-name">Congo ▾</span>
             </div>
           </div>
 
-          {/* 💡 MENU DROPDOWN: Hanya muncul jika state isDropdownOpen bernilai true */}
+          {/* MENU DROPDOWN AUTH */}
           {isDropdownOpen && (
             <div className="auth-dropdown">
               <Link to="/login" className="dropdown-item" onClick={() => setIsDropdownOpen(false)}>
