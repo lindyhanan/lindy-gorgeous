@@ -17,7 +17,7 @@ export default function Header({ query, setQuery }) {
         .top-header {
           display: flex;
           justify-content: space-between;
-          align-items: center;
+          align-items: censter;
           width: 100%;
           padding-bottom: 15px;
           box-sizing: border-box;
@@ -50,14 +50,14 @@ export default function Header({ query, setQuery }) {
         .header-right {
           display: flex;
           align-items: center;
-          gap: 20px; /* Jarak antar elemen agar berderet rapi ke kanan */
+          gap: 20px; 
         }
 
         /* ⚙️ SEARCH BOX (Kapsul Gelap Bulat) */
         .search-box {
           display: flex;
           align-items: center;
-          background-color: #2a2929; /* Warna abu gelap kapsul search */
+          background-color: #2a2929; 
           border-radius: 50px;
           padding: 10px 20px;
           width: 260px;
@@ -108,7 +108,7 @@ export default function Header({ query, setQuery }) {
           position: absolute;
           top: -2px;
           right: -2px;
-          background-color: #d87d56; /* Warna oranye/cokelat badge notif */
+          background-color: #d87d56; 
           color: #ffffff;
           font-size: 11px;
           font-weight: 700;
@@ -118,12 +118,12 @@ export default function Header({ query, setQuery }) {
           display: flex;
           align-items: center;
           justify-content: center;
-          border: 2px solid #3a3838;
+          border: 2px solid #2a2929;
         }
 
         /* ⚙️ USER AVATAR & INFO WRAPPER */
         .user-avatar-wrapper {
-          position: relative; /* Menjaga dropdown agar presisi di bawah profil */
+          position: relative; 
         }
 
         .user-avatar {
@@ -134,13 +134,13 @@ export default function Header({ query, setQuery }) {
           padding: 4px 8px;
           border-radius: 12px;
           transition: background 0.2s;
+          user-select: none;
         }
 
         .user-avatar:hover {
           background-color: rgba(255, 255, 255, 0.05);
         }
 
-        /* Memaksa foto profil bulat kecil estetik sesuai gambar */
         .user-avatar img {
           width: 42px;
           height: 42px;
@@ -167,20 +167,21 @@ export default function Header({ query, setQuery }) {
           color: #ffffff;
         }
 
-        /* ⚙️ DROPDOWN MENU AUTH (LOGIN/REGISTER/LOGOUT) */
+        /* ── DROPDOWN MENU AUTH (LOGIN/REGISTER/LOGOUT) ── */
         .auth-dropdown {
           position: absolute;
           top: 55px;
           right: 0;
-          background-color: #2a2929;
-          border: 1px solid #444;
-          border-radius: 12px;
+          background-color: #212121; /* Disetarakan dengan warna abu arang Card */
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 14px;
           width: 160px;
-          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
           z-index: 999;
           overflow: hidden;
           display: flex;
           flex-direction: column;
+          animation: dropDownFade 0.15s ease-out;
         }
 
         .dropdown-item {
@@ -193,21 +194,21 @@ export default function Header({ query, setQuery }) {
         }
 
         .dropdown-item:hover {
-          background-color: rgba(255, 255, 255, 0.08);
+          background-color: rgba(255, 255, 255, 0.05);
         }
 
         .dropdown-divider {
           height: 1px;
-          background-color: #444;
+          background-color: rgba(255, 255, 255, 0.06);
           margin: 4px 0;
         }
 
         .logout-item {
-          color: #ff5252;
+          color: #f87171; /* Merah lembut dark theme */
         }
 
         .logout-item:hover {
-          background-color: rgba(255, 82, 82, 0.1);
+          background-color: rgba(248, 113, 113, 0.08);
         }
 
         /* ⚙️ BUTTON: + ADD MENU */
@@ -232,6 +233,11 @@ export default function Header({ query, setQuery }) {
 
         .add-btn:active {
           transform: translateY(0);
+        }
+
+        @keyframes dropDownFade {
+          from { opacity: 0; transform: translateY(-5px); }
+          to { opacity: 1; transform: translateY(0); }
         }
       `}</style>
 

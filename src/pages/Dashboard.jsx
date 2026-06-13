@@ -19,31 +19,37 @@ export default function Dashboard({ activeTab = "dashboard" }) {
 
   const currentTab = activeTab.toLowerCase().trim();
 
-  const filteredProducts = ALL_PRODUCTS.filter((p) => 
-    p.category === activeCat && p.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Filter produk yang aman dari re-render loop
+  const filteredProducts = ALL_PRODUCTS.filter((p) => {
+    const matchesCategory = p.category === activeCat;
+    const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
 
+  // Fungsi tambah produk yang dioptimasi agar stabil
   const handleAddProduct = (product) => {
-    setCartItems((prev) => {
-      const exist = prev.find((item) => item.id === product.id);
-      if (exist) {
-        return prev.map((item) => item.id === product.id ? { ...item, qty: item.qty + 1 } : item);
+    setCartItems((prevItems) => {
+      const isExist = prevItems.find((item) => item.id === product.id);
+      if (isExist) {
+        return prevItems.map((item) =>
+          item.id === product.id ? { ...item, qty: item.qty + 1 } : item
+        );
       }
-      return [...prev, { ...product, qty: 1 }];
+      return [...prevItems, { ...product, qty: 1 }];
     });
   };
 
   return (
-    <div style={{ padding: "30px", width: "100%", minHeight: "100vh", display: "flex", flexDirection: "column", boxSizing: "border-box" }}>
+    <div style={{ padding: "30px", width: "100%", minHeight: "100vh", display: "flex", flexDirection: "column", boxSizing: "border-box", backgroundColor: "#1e1e1e" }}>
       
-      {/* FIXED: setQuery sekarang mengarah ke fungsi setSearchQuery yang benar */}
+      {/* HEADER UTAMA */}
       <Header query={searchQuery} setQuery={setSearchQuery} />
 
       {/* RENDER VIEW DASHBOARD UTAMA */}
       {currentTab === "dashboard" && (
         <div style={{ display: "grid", gridTemplateColumns: "1fr 380px", gap: "30px", marginTop: "25px", alignItems: "start", width: "100%" }}>
           
-          {/* SEKTOR KIRI: TABS & GRID PRODUK (AMBIL 3 KOLOM SEJAJAR) */}
+          {/* SEKTOR KIRI: TABS & GRID PRODUK */}
           <div style={{ display: "flex", flexDirection: "column", gap: "20px", minWidth: 0 }}>
             <CategoryTabs active={activeCat} onChange={setActiveCat} />
             
@@ -51,11 +57,11 @@ export default function Dashboard({ activeTab = "dashboard" }) {
               Menu {activeCat}
             </h2>
             
-            {/* GRID DIKUNCI MATI 3 KOLOM MENYAMPING */}
+            {/* GRID 3 KOLOM */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "20px", width: "100%" }}>
-              {filteredProducts.map((prod, idx) => (
+              {filteredProducts.map((prod) => (
                 <ProductCard
-                  key={idx}
+                  key={prod.id} // Diubah ke prod.id agar key tidak bentrok saat re-render
                   image={prod.img}
                   name={prod.name}
                   price={prod.price}
@@ -65,6 +71,9 @@ export default function Dashboard({ activeTab = "dashboard" }) {
                 />
               ))}
             </div>
+            {filteredProducts.length === 0 && (
+              <p style={{ color: "#a3a3a3", textAlign: "center", marginTop: "20px" }}>Menu tidak ditemukan.</p>
+            )}
           </div>
 
           {/* SEKTOR KANAN: PANEL STRUK PESANAN */}
@@ -77,22 +86,22 @@ export default function Dashboard({ activeTab = "dashboard" }) {
 
       {/* ROUTING CADANGAN TAB EXTRA */}
       {currentTab === "menu" && (
-        <div style={{ padding: "40px", backgroundColor: "#ece6dc", color: "#2c2520", borderRadius: "24px", marginTop: "25px" }}>
+        <div style={{ padding: "40px", backgroundColor: "#212121", color: "#ffffff", borderRadius: "24px", marginTop: "25px" }}>
           <h2>📋 Halaman Manajemen Stok & Menu</h2>
         </div>
       )}
       {currentTab === "orders" && (
-        <div style={{ padding: "40px", backgroundColor: "#ece6dc", color: "#2c2520", borderRadius: "24px", marginTop: "25px" }}>
+        <div style={{ padding: "40px", backgroundColor: "#212121", color: "#ffffff", borderRadius: "24px", marginTop: "25px" }}>
           <h2>◷ Riwayat Transaksi Kasir</h2>
         </div>
       )}
       {currentTab === "analytics" && (
-        <div style={{ padding: "40px", backgroundColor: "#ece6dc", color: "#2c2520", borderRadius: "24px", marginTop: "25px" }}>
+        <div style={{ padding: "40px", backgroundColor: "#212121", color: "#ffffff", borderRadius: "24px", marginTop: "25px" }}>
           <h2>📊 Laporan Grafik Analitik</h2>
         </div>
       )}
       {currentTab === "settings" && (
-        <div style={{ padding: "40px", backgroundColor: "#ece6dc", color: "#2c2520", borderRadius: "24px", marginTop: "25px" }}>
+        <div style={{ padding: "40px", backgroundColor: "#212121", color: "#ffffff", borderRadius: "24px", marginTop: "25px" }}>
           <h2>⚙️ Pengaturan Sistem Aplikasi</h2>
         </div>
       )}

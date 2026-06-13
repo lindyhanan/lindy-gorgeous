@@ -1,14 +1,14 @@
 import { useState } from "react";
 
-export default function CategoryTabs({ active, onChange }) {
-  // Daftar kategori default sesuai dengan menu yang ada pada gambar
-  const categories = [
-    { id: "Topping", name: "Topping", icon: "🍫" },
-    { id: "Kopi", name: "Kopi", icon: "☕" },
-    { id: "Bubuk Kopi", name: "Bubuk Kopi", icon: "🫙" },
-    { id: "Snack", name: "Snack", icon: "🍿" },
-  ];
+// 🚀 DIKUNCI DI LUAR: Biar tidak memicu infinite loop re-render memori!
+const CATEGORIES_DATA = [
+  { id: "Topping", name: "Topping", icon: "🍫" },
+  { id: "Kopi", name: "Kopi", icon: "☕" },
+  { id: "Bubuk Kopi", name: "Bubuk Kopi", icon: "🫙" },
+  { id: "Snack", name: "Snack", icon: "🍿" },
+];
 
+export default function CategoryTabs({ active, onChange }) {
   return (
     <div className="categories-tab-container">
       <style>{`
@@ -16,7 +16,7 @@ export default function CategoryTabs({ active, onChange }) {
         .categories-tab-container {
           display: flex;
           align-items: center;
-          gap: 16px; /* Jarak antar tombol kapsul */
+          gap: 16px; 
           margin-top: 10px;
           width: 100%;
           box-sizing: border-box;
@@ -27,12 +27,12 @@ export default function CategoryTabs({ active, onChange }) {
         .category-tab-btn {
           display: flex;
           align-items: center;
-          gap: 10px; /* Jarak antara emoji dan teks di dalam tombol */
-          background-color: #ffffff; /* Warna dasar putih susu */
-          color: #2c2520; /* Warna teks gelap */
+          gap: 10px; 
+          background-color: #ffffff; 
+          color: #2c2520; 
           border: none;
           padding: 12px 24px;
-          border-radius: 16px; /* Sudut melengkung halus sesuai gambar */
+          border-radius: 16px; 
           font-size: 15px;
           font-weight: 600;
           cursor: pointer;
@@ -40,7 +40,6 @@ export default function CategoryTabs({ active, onChange }) {
           box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
         }
 
-        /* Efek hover saat mouse mendekati tombol yang tidak aktif */
         .category-tab-btn:hover {
           background-color: #f5f0e8;
           transform: translateY(-1px);
@@ -48,13 +47,12 @@ export default function CategoryTabs({ active, onChange }) {
 
         /* ── STYLING TOMBOL KAPSUL (AKTIF / DIKLIK) ── */
         .category-tab-btn.active {
-          background-color: #92634e; /* Warna cokelat khas Doge Caffe */
-          color: #ffffff; /* Mengubah teks menjadi putih saat aktif */
+          background-color: #92634e; 
+          color: #ffffff; 
           transform: translateY(0);
           box-shadow: 0 6px 15px rgba(146, 99, 78, 0.3);
         }
 
-        /* Menjaga ukuran emoji agar tetap proporsional */
         .category-tab-icon {
           font-size: 16px;
           display: inline-flex;
@@ -63,8 +61,8 @@ export default function CategoryTabs({ active, onChange }) {
         }
       `}</style>
 
-      {/* Looping data kategori menjadi deretan tombol kapsul */}
-      {categories.map((cat) => (
+      {/* Looping data kategori yang aman */}
+      {CATEGORIES_DATA.map((cat) => (
         <button
           key={cat.id}
           className={`category-tab-btn ${active === cat.id ? "active" : ""}`}
