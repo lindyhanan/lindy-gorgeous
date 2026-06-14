@@ -1,8 +1,9 @@
-.product-card {
-  width: 330px;
-  background: #f5f2f0;
-  border-radius: 30px;
-  padding: 24px;
+.product-card{
+  width:100%;
+  background:#f5f2f0;
+  border-radius:30px;
+  padding:24px;
+  box-sizing:border-box;
 }
 
 .product-top {
@@ -19,7 +20,7 @@
 
 .product-info h3 {
   margin: 0;
-  color: white;
+  color: #2c2520;
   font-size: 2rem;
   font-weight: 700;
 }
