@@ -1,91 +1,86 @@
-import { useState } from "react";
-import { Routes, Route } from "react-router-dom";
+import React, { lazy, Suspense, useState, useEffect } from "react"; // 💡 PERBAIKAN: Menambahkan lazy, Suspense, useState, dan useEffect
+import { Routes, Route, Outlet } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
-import Dashboard from "./pages/Dashboard";
-import AuthLayout from "./layouts/AuthLayout";
-import Login from "./pages/auth/Login";
-import Register from "./pages/auth/Register";
-import Member from "./pages/Member";
+import Loading from "./components/Loading";
 
-const MenuManagement = () => (
-  <div style={{ padding: "40px", color: "#fff" }}>
-    <h2>📋 Halaman Manajemen Stok & Menu</h2>
-  </div>
-);
+// Lazy loading komponen halaman
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Table = lazy(() => import("./components/Table"));
+const RevenueDashboard = lazy(() => import("./components/RevenueDashboard"));
+const Member = lazy(() => import("./pages/Member"));
+const Components = lazy(() => import("./pages/Components"));
+const Login = lazy(() => import("./pages/auth/Login"));
+const Register = lazy(() => import("./pages/auth/Register"));
+const Logout = lazy(() => import("./pages/auth/Logout"));
 
-const OrdersHistory = () => (
-  <div style={{ padding: "40px", color: "#fff" }}>
-    <h2>◷ Halaman Riwayat Transaksi</h2>
-  </div>
-);
-
-const SettingsPage = () => (
-  <div style={{ padding: "40px", color: "#fff" }}>
-    <h2>⚙️ Halaman Pengaturan Sistem</h2>
-  </div>
-);
-
-function MainApp() {
-  const [activeTab, setActiveTab] = useState("dashboard");
-
-  const renderContent = () => {
-    switch (activeTab.toLowerCase().trim()) {
-      case "dashboard":
-      case "home":
-        return <Dashboard />;
-
-      case "menu":
-        return <MenuManagement />;
-
-      case "orders":
-        return <OrdersHistory />;
-
-      case "settings":
-        return <SettingsPage />;
-
-      default:
-        return <Dashboard />;
-    }
-  };
-
+// ── LAYOUT UTAMA UNTUK HALAMAN YANG MEMAKAI SIDEBAR ──
+function DashboardLayout() {
   return (
-    <div className="main-app-container">
-      <style>{`
-        .main-app-container {
-          display:flex;
-          background:#3a3838;
-          min-height:100vh;
-          width:100vw;
-          border-radius:40px;
-          overflow:hidden;
-        }
-
-        .page-content-render{
-          flex-grow:1;
-          overflow-y:auto;
-        }
-      `}</style>
-
-      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
-
-      <div className="page-content-render">{renderContent()}</div>
+    <div className="dashboard-container">
+      <Sidebar />
+      <div className="dashboard-main">
+        <Outlet />
+      </div>
     </div>
   );
 }
 
-export default function App() {
-  return (
-    <Routes>
-      {/* Dashboard */}
-      <Route path="/" element={<MainApp />} />
+function App() {
+  // 💡 State Global untuk sinkronisasi data transaksi kasir ke grafik/tabel
+  const [transactions, setTransactions] = useState(() => {
+    const savedData = localStorage.getItem("crm_transactions");
+    return savedData ? JSON.parse(savedData) : [
+      { id: "TX-001", item: "Kopi Susu", category: "Kopi", type: "Dine In", amount: 25000, date: "Sen" },
+      { id: "TX-002", item: "Croissant", category: "Makanan", type: "Pick Up", amount: 30000, date: "Sen" },
+    ];
+  });
 
-      {/* Layout khusus auth */}
-      <Route element={<AuthLayout />}>
+  // 💡 Auto-save data transaksi ke LocalStorage browser
+  useEffect(() => {
+    localStorage.setItem("crm_transactions", JSON.stringify(transactions));
+  }, [transactions]);
+
+  // 💡 Fungsi penambah transaksi saat kasir menekan tombol pesan
+  const handleNewOrder = (newOrderItems, orderType) => {
+    const days = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
+    const today = days[new Date().getDay()];
+    
+    const newTransactions = newOrderItems.map((item, index) => ({
+      id: `TX-${Date.now()}-${index}`,
+      item: item.name,
+      category: item.category || "Kopi",
+      type: orderType,
+      amount: item.price * item.quantity,
+      date: today
+    }));
+
+    setTransactions((prev) => [...newTransactions, ...prev]);
+  };
+
+  return (
+    <Suspense fallback={<Loading />}>
+      <Routes>
+        {/* ── BUNDEL 1: HALAMAN INTERNAL (MEMAKAI SIDEBAR) ── */}
+        <Route element={<DashboardLayout />}>
+          {/* 💡 Oper fungsi handleNewOrder ke Dashboard */}
+          <Route path="/" element={<Dashboard onPlaceOrder={handleNewOrder} />} />
+          {/* 💡 Kirim state data ke Table dan Analytics */}
+          <Route path="/table" element={<Table transactions={transactions} />} />
+          <Route path="/analytics" element={<RevenueDashboard transactions={transactions} />} />
+          
+          <Route path="/components" element={<Components />} />
+          <Route path="/orders" element={<div style={{ color: '#fff' }}>Orders</div>} />
+          <Route path="/settings" element={<div style={{ color: '#fff' }}>Settings</div>} />
+        </Route>
+
+        {/* ── BUNDEL 2: HALAMAN AUTH & OUT (LEPAS DARI SIDEBAR) ── */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-      </Route>
-
-      <Route path="/member" element={<Member />} />
-    </Routes>
+        <Route path="/logout" element={<Logout />} />
+        <Route path="/member" element={<Member />} />
+      </Routes>
+    </Suspense>
   );
 }
+
+export default App;

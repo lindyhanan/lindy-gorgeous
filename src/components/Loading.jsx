@@ -5,8 +5,8 @@ export default function Loading() {
     <div className="loading-wrap" role="status" aria-label="Memuat halaman">
 
       <div className="loading-brand">
-        <p className="brand-label">Lindy Coffee</p>
-        <p className="sub-label">CRM Platform</p>
+        <p className="brand-label">Dogee Coffee</p>
+        <p className="sub-label">Lindy</p>
       </div>
 
       <svg className="cup-svg" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">

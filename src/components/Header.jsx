@@ -282,6 +282,9 @@ export default function Header({ query, setQuery }) {
               <Link to="/register" className="dropdown-item" onClick={() => setIsDropdownOpen(false)}>
                 📝 Register
               </Link>
+              <Link to="/member" className="dropdown-item" onClick={() => setIsDropdownOpen(false)}>
+                �  Member
+              </Link>
               <div className="dropdown-divider"></div>
               <Link to="/logout" className="dropdown-item logout-item" onClick={() => setIsDropdownOpen(false)}>
                 🚪 Logout

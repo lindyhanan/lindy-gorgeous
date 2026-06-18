@@ -2,111 +2,132 @@ import { NavLink } from "react-router-dom";
 
 const navItems = [
   { icon: "🏠", label: "Dashboard", to: "/" },
-  { icon: "📋", label: "Menu", to: "/menu" },
+  { icon: "📊", label: "Analytics", to: "/analytics" },
+  { icon: "📋", label: "Menu", to: "/table" },
   { icon: "📄", label: "Components", to: "/components" },
   { icon: "⏰", label: "Orders", to: "/orders" },
-  { icon: "📊", label: "Analytics", to: "/analytics" },
   { icon: "⚙️", label: "Settings", to: "/settings" },
 ];
 
 export default function Sidebar() {
   return (
     <>
-      <style>{`
-        /* ── CONTAINER UTAMA SIDEBAR VERTIKAL ── */
-        .sidebar {
-          width: 95px;
-          height: calc(100vh - 40px); /* Dikurangi margin agar melayang manis */
-          background-color: #ababab; /* Abu-abu arang gelap sesuai dashboard luar */
-          border-radius: 28px; /* Lengkungan tebal estetik */
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: space-between;
-          padding: 30px 0;
-          box-sizing: border-box;
-          position: sticky;
-          top: 20px;
-          margin: 20px 0 20px 20px;
-        }
+<style>{`
+  /* ── CONTAINER UTAMA SIDEBAR VERTIKAL ── */
+  .sidebar {
+    width: 95px;
+    height: calc(100vh - 40px);
+    background-color: rgba(100, 93, 93, 0.55);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 30px 0;
+    box-sizing: border-box;
+    
+    /* MODIFIKASI DISINI: Mengunci posisi agar tidak bergerak saat scroll */
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    z-index: 100;
+  }
 
-        /* ── LOGO BRAND ATAS ── */
-        .sidebar-logo {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          margin-bottom: 20px;
-        }
+  /* ── LOGO BRAND ATAS ── */
+  .sidebar-logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 20px;
+  }
 
-        .logo-icon {
-          width: 55px;
-          height: 55px;
-          border-radius: 18px;
-          background-color: #92634e; /* Cokelat serasi Doge Caffe */
-          color: white;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          font-size: 24px;
-          box-shadow: 0 4px 12px rgba(146, 99, 78, 0.3);
-        }
+  .logo-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 20px;
+    background-color: #92634e; /* Cokelat khas Doge Caffe */
+    color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    box-shadow: 0 8px 16px rgba(146, 99, 78, 0.25);
+  }
 
-        /* ── DAFTAR NAVIGASI TENGAH ── */
-        .sidebar-nav {
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
-          flex: 1;
-          justify-content: center;
-        }
+  /* ── DAFTAR NAVIGASI TENGAH ── */
+  .sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px; /* Jarak antar ikon menu diperlebar agar seimbang */
+    flex: 1;
+    justify-content: center;
+    width: 100%;
+  }
 
-        /* ── STYLING TOMBOL NAVIGASI (DEFAULT) ── */
-        .nav-btn {
-          width: 52px;
-          height: 52px;
-          border: none;
-          border-radius: 16px;
-          background: transparent;
-          color: #8a8a8a; /* Warna redup untuk menu pasif */
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          text-decoration: none;
-          font-size: 20px;
-          transition: all 0.2s ease;
-          cursor: pointer;
-        }
+  /* ── STYLING TOMBOL NAVIGASI (DEFAULT) ── */
+  .nav-btn {
+    width: 56px;
+    height: 56px;
+    border: none;
+    border-radius: 20px;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.4); /* Kontras warna pasif yang pas di latar gelap */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    font-size: 22px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+  }
 
-        /* Efek sorot tipis */
-        .nav-btn:hover {
-          background-color: rgba(255, 255, 255, 0.05);
-          color: #ffffff;
-        }
+  /* Efek hover halus */
+  .nav-btn:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.9);
+    transform: scale(1.05);
+  }
 
-        /* ── KONDISI MENYALA AKTIF (MATCH GAMBAR) ── */
-        .nav-btn.active {
-          background-color: #92634e; /* Cokelat solid utama */
-          color: #ffffff;
-          box-shadow: 0 6px 16px rgba(146, 99, 78, 0.35);
-        }
+  /* ── KONDISI MENYALA AKTIF ── */
+  .nav-btn.active {
+    background-color: #92634e; 
+    color: #ffffff;
+    box-shadow: 0 8px 20px rgba(146, 99, 78, 0.4);
+  }
 
-        /* ── BAGIAN BAWAH (LOGOUT) ── */
-        .sidebar-bottom {
-          margin-top: auto;
-        }
+  /* ── BAGIAN BAWAH (LOGOUT) ── */
+  .sidebar-bottom {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: auto;
+  }
 
-        .logout-btn {
-          background-color: rgba(255, 255, 255, 0.03);
-          border: 1px solid rgba(255, 255, 255, 0.05);
-          color: #a7a7a7;
-        }
+  .logout-btn {
+    width: 56px;
+    height: 56px;
+    border: none;
+    border-radius: 20px;
+    background-color: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 22px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
 
-        .logout-btn:hover {
-          background-color: rgba(255, 82, 82, 0.15);
-          color: #ff5252;
-          border-color: transparent;
-        }
-      `}</style>
+  .logout-btn:hover {
+    background-color: rgba(239, 83, 80, 0.2); /* Merah lembut transparan */
+    color: #ef5350; /* Warna teks/ikon merah tegas */
+    transform: scale(1.05);
+  }
+`}</style>
 
       <aside className="sidebar">
         {/* Logo Atas */}

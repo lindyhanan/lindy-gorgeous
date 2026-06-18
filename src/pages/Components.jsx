@@ -1,16 +1,12 @@
 import { useState } from "react";
 import SearchBar from "../components/SearchBar";
 import CategoryTabs from "../components/CategoryTabs";
-import StatsCard from "../components/StatsCard";
-import ProductCard from "../components/ProductCard";
-import OrderPanel from "../components/OrderPanel";
-import RevenueChart from "../components/RevenueChart";
 import FloatingButton from "../components/FloatingButton";
 import Button from "../components/Button";
 import Badge from "../components/Badge";
 import Avatar from "../components/Avatar";
 import Card from "../components/Card";
-import RevenueAnalytics from "../components/RevenueAnalytics";
+import RevenueDashboard from "../components/RevenueDashboard";
 import Modal from "../components/Modal";
 import Table from "../components/Table";
 import Alert from "../components/Alert";
@@ -146,12 +142,6 @@ export default function Components() {
           <Alert type="success" message="Menu baru berhasil ditambahkan!" />
         </Card>
 
-        {/* Stats Card */}
-        <Card>
-          <h2 className="component-label">Stats Card Preview</h2>
-          <StatsCard title="Total Pendapatan" value="Rp 45.230.000" growth="+12.5%" />
-        </Card>
-
         {/* Category Tabs */}
         <Card>
           <h2 className="component-label">Category Tabs</h2>
@@ -172,17 +162,6 @@ export default function Components() {
           </div>
         </Card>
 
-        {/* Product Card */}
-        <Card>
-          <h2 className="component-label">Product Card Item</h2>
-          <ProductCard 
-            name="Caramel Latte" 
-            price={28000} 
-            rating={4.8} 
-            reviews={120} 
-            image="https://images.unsplash.com/photo-1534778101976-62847782c213?w=300&q=80" 
-          />
-        </Card>
 
         {/* Table - Dimatangkan agar memakan 2 kolom penuh */}
         <div className="span-2">
@@ -192,32 +171,11 @@ export default function Components() {
           </Card>
         </div>
 
-        {/* Revenue Chart */}
-        <div className="span-2">
-          <Card>
-            <h2 className="component-label">Revenue Bar Chart</h2>
-            <RevenueChart />
-          </Card>
-        </div>
-
         {/* Revenue Analytics */}
         <div className="span-2">
           <Card>
             <h2 className="component-label">Revenue Analytics Report</h2>
-            <RevenueAnalytics />
-          </Card>
-        </div>
-
-        {/* Order Panel Struk */}
-        <div className="span-2">
-          <Card>
-            <h2 className="component-label">Order Panel (Sidebar Kanan)</h2>
-            <OrderPanel 
-              items={[
-                { id: 1, name: "Caramel Latte", price: 28000, qty: 2, size: "M" },
-                { id: 2, name: "Espresso Dolce", price: 24000, qty: 1, size: "L" }
-              ]} 
-            />
+            <RevenueDashboard />
           </Card>
         </div>
 
