@@ -12,6 +12,7 @@ const Components = lazy(() => import("./pages/Components"));
 const Login = lazy(() => import("./pages/auth/Login"));
 const Register = lazy(() => import("./pages/auth/Register"));
 const Logout = lazy(() => import("./pages/auth/Logout"));
+const Forgot = lazy(() => import("./pages/auth/Forgot")); // 💡 Tambahkan halaman Forgot.jsx
 
 // ── LAYOUT UTAMA UNTUK HALAMAN YANG MEMAKAI SIDEBAR ──
 function DashboardLayout() {
@@ -76,6 +77,7 @@ function App() {
         {/* ── BUNDEL 2: HALAMAN AUTH & OUT (LEPAS DARI SIDEBAR) ── */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot" element={<Forgot />} />
         <Route path="/logout" element={<Logout />} />
         <Route path="/member" element={<Member />} />
       </Routes>

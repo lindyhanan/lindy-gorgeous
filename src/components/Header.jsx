@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom"; // Tambahkan useNavigate j
 
 export default function Header({ query, setQuery }) {
   const navigate = useNavigate();
-  // State untuk mengontrol buka/tutup dropdown menu auth
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [username, setUsername] = useState("Guest");
   const [role, setRole] = useState("guest");

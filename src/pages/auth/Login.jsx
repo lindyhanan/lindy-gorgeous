@@ -1,31 +1,26 @@
 import { Link, useNavigate } from "react-router-dom";
-import Card from "../../components/Card";
 import { useState, useRef, useEffect } from "react";
 import { notesAPI } from "../../services/notesAPI"; // 💡 Sesuaikan path notesAPI.js kamu
 
 export default function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState(""); // 💡 Tambahkan state password
-  const [loading, setLoading] = useState(false); // 💡 Tambahkan state loading
+  const [password, setPassword] = useState(""); 
+  const [loading, setLoading] = useState(false); 
   
-  // 💡 [useRef] Referensi pointer untuk membidik input email
   const emailInputRef = useRef(null);
 
-  // 💡 [useEffect] Memicu fokus otomatis saat halaman login dimuat
   useEffect(() => {
     if (emailInputRef.current) {
       emailInputRef.current.focus();
     }
   }, []);
 
-  // 💡 Modifikasi validasi login langsung ke Supabase
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     try {
       setLoading(true);
 
-      // Cari data user berdasarkan email yang diinput
       const userList = await notesAPI.getUserByEmail(email);
 
       if (userList.length === 0) {
@@ -35,19 +30,15 @@ export default function Login() {
 
       const userTerdaftar = userList[0];
 
-      // Validasi password teks biasa
       if (userTerdaftar.password !== password) {
         alert("Password yang Anda masukkan salah!");
         return;
       }
-
       alert(`Login Berhasil! Selamat datang, ${userTerdaftar.username}`);
 
-      // Simpan data user ke localStorage (biar nama kasir terupdate di Header)
       localStorage.setItem("user_name", userTerdaftar.username);
       localStorage.setItem("user_role", userTerdaftar.role);
 
-      // Routing dinamis berdasarkan role yang ada di database Supabase
       if (userTerdaftar.role === "member") {
         navigate("/member");
       } else if (userTerdaftar.role === "admin") {
@@ -65,7 +56,6 @@ export default function Login() {
 
   return (
     <div className="auth-screen-wrapper">
-      {/* SCOPED CSS INTEGRASI - TIDAK DIUBAH SAMA SEKALI */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
 
@@ -109,14 +99,6 @@ export default function Login() {
           z-index: 2;
           color: #ffffff;
           max-width: 500px;
-        }
-
-        .auth-brand-logo {
-          font-size: 1.5rem;
-          font-weight: 700;
-          color: #b07e66;
-          margin-bottom: 40px;
-          letter-spacing: 0.5px;
         }
 
         .auth-banner-content h1 {
@@ -252,14 +234,12 @@ export default function Login() {
           border-bottom-color: #92634e;
         }
 
-        .password-field .password-toggle-icon {
-          position: absolute;
-          right: 0;
-          top: 50%;
-          transform: translateY(-50%);
-          color: #666666;
-          cursor: pointer;
-          font-size: 1.1rem;
+        /* 💡 BARIS TAMBAHAN UNTUK INTEGRASI RESET PASSWORD */
+        .auth-utilities-row {
+          display: flex;
+          justify-content: flex-end;
+          margin-top: -12px;
+          margin-bottom: 20px;
         }
 
         .auth-submit-btn {
@@ -356,7 +336,7 @@ export default function Login() {
             </div>
 
             {/* Input Password */}
-            <div className="auth-input-group password-field">
+            <div className="auth-input-group">
               <input 
                 type="password" 
                 placeholder="Password" 
@@ -366,7 +346,11 @@ export default function Login() {
                 required 
                 className="auth-input-control" 
               />
-              <span className="password-toggle-icon">👁️</span>
+            </div>
+
+            {/* 💡 MODIFIKASI: Penempatan link reset password diletakkan pas di bawah input */}
+            <div className="auth-utilities-row">
+              <Link to="/forgot" className="auth-link" style={{ fontSize: "0.85rem" }}>Lupa Password?</Link>
             </div>
 
             <button type="submit" className="auth-submit-btn" disabled={loading}>
@@ -377,9 +361,6 @@ export default function Login() {
           <p className="auth-switch-prompt">
             Don't have an account? <Link to="/register" className="auth-link">Register</Link>
           </p>
-          <Card>
-              <small>Membaca database Supabase asli</small>
-          </Card>
         </div>
       </div>
     </div>
