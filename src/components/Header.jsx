@@ -1,13 +1,36 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react"; // 💡 Tambahkan useEffect di sini
+import { Link, useNavigate } from "react-router-dom"; // Tambahkan useNavigate jika ingin redirect setelah logout
 
 export default function Header({ query, setQuery }) {
+  const navigate = useNavigate();
   // State untuk mengontrol buka/tutup dropdown menu auth
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [username, setUsername] = useState("Guest");
+  const [role, setRole] = useState("guest");
+
+  useEffect(() => {
+    // 💡 Ambil data nama dan role dari localStorage yang diset saat login berhasil
+    const savedName = localStorage.getItem("user_name");
+    const savedRole = localStorage.getItem("user_role");
+
+    if (savedName) setUsername(savedName);
+    if (savedRole) setRole(savedRole);
+  }, []);
 
   // Fungsi toggle dropdown saat avatar diklik
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  // Fungsi untuk membersihkan data login saat klik logout
+  const handleLogout = () => {
+    localStorage.removeItem("user_name");
+    localStorage.removeItem("user_role");
+    setUsername("Guest");
+    setRole("guest");
+    setIsDropdownOpen(false);
+    alert("Anda telah logout.");
+    navigate("/login"); // arahkan ke halaman login
   };
 
   return (
@@ -17,7 +40,7 @@ export default function Header({ query, setQuery }) {
         .top-header {
           display: flex;
           justify-content: space-between;
-          align-items: censter;
+          align-items: center; /* 💡 Perbaikan typo censter -> center */
           width: 100%;
           padding-bottom: 15px;
           box-sizing: border-box;
@@ -73,6 +96,7 @@ export default function Header({ query, setQuery }) {
         .search-input {
           background: transparent;
           border: none;
+          border-bottom: none; /* pastikan tidak mewarisi border bottom global */
           outline: none;
           color: #ffffff;
           font-size: 14px;
@@ -172,7 +196,7 @@ export default function Header({ query, setQuery }) {
           position: absolute;
           top: 55px;
           right: 0;
-          background-color: #212121; /* Disetarakan dengan warna abu arang Card */
+          background-color: #212121; 
           border: 1px solid rgba(255, 255, 255, 0.08);
           border-radius: 14px;
           width: 160px;
@@ -204,7 +228,7 @@ export default function Header({ query, setQuery }) {
         }
 
         .logout-item {
-          color: #f87171; /* Merah lembut dark theme */
+          color: #f87171; 
         }
 
         .logout-item:hover {
@@ -268,8 +292,8 @@ export default function Header({ query, setQuery }) {
           <div className="user-avatar" onClick={toggleDropdown}>
             <img src="https://i.imgur.com/yXOvdOS.jpeg" alt="User Avatar" />
             <div className="user-info">
-              <span className="user-role">admin</span>
-              <span className="user-name">Congo ▾</span>
+              <span className="user-role">{role}</span>
+              <span className="user-name">{username} ▾</span>
             </div>
           </div>
 
@@ -283,12 +307,13 @@ export default function Header({ query, setQuery }) {
                 📝 Register
               </Link>
               <Link to="/member" className="dropdown-item" onClick={() => setIsDropdownOpen(false)}>
-                �  Member
+                👤 Member
               </Link>
               <div className="dropdown-divider"></div>
-              <Link to="/logout" className="dropdown-item logout-item" onClick={() => setIsDropdownOpen(false)}>
+              {/* 💡 Menggunakan tombol div/button/link yang memicu fungsi logout */}
+              <div className="dropdown-item logout-item" style={{ cursor: 'pointer' }} onClick={handleLogout}>
                 🚪 Logout
-              </Link>
+              </div>
             </div>
           )}
         </div>

@@ -1,10 +1,13 @@
 import { Link, useNavigate } from "react-router-dom";
 import Card from "../../components/Card";
 import { useState, useRef, useEffect } from "react";
+import { notesAPI } from "../../services/notesAPI"; // 💡 Sesuaikan path notesAPI.js kamu
 
 export default function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState(""); // 💡 Tambahkan state password
+  const [loading, setLoading] = useState(false); // 💡 Tambahkan state loading
   
   // 💡 [useRef] Referensi pointer untuk membidik input email
   const emailInputRef = useRef(null);
@@ -16,22 +19,53 @@ export default function Login() {
     }
   }, []);
 
-  const handleLoginSubmit = (e) => {
+  // 💡 Modifikasi validasi login langsung ke Supabase
+  const handleLoginSubmit = async (e) => {
     e.preventDefault();
-    alert("Login Berhasil!");
+    try {
+      setLoading(true);
 
-    if (email === "member@gmail.com") {
-      navigate("/member");
-    } else if (email === "admin@gmail.com") {
-      navigate("/");
-    } else {
-      navigate("/guest");
+      // Cari data user berdasarkan email yang diinput
+      const userList = await notesAPI.getUserByEmail(email);
+
+      if (userList.length === 0) {
+        alert("Email tidak terdaftar di database Supabase!");
+        return;
+      }
+
+      const userTerdaftar = userList[0];
+
+      // Validasi password teks biasa
+      if (userTerdaftar.password !== password) {
+        alert("Password yang Anda masukkan salah!");
+        return;
+      }
+
+      alert(`Login Berhasil! Selamat datang, ${userTerdaftar.username}`);
+
+      // Simpan data user ke localStorage (biar nama kasir terupdate di Header)
+      localStorage.setItem("user_name", userTerdaftar.username);
+      localStorage.setItem("user_role", userTerdaftar.role);
+
+      // Routing dinamis berdasarkan role yang ada di database Supabase
+      if (userTerdaftar.role === "member") {
+        navigate("/member");
+      } else if (userTerdaftar.role === "admin") {
+        navigate("/");
+      } else {
+        navigate("/guest");
+      }
+
+    } catch (err) {
+      alert(`Terjadi kesalahan login: ${err.message}`);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="auth-screen-wrapper">
-      {/* SCOPED CSS INTEGRASI */}
+      {/* SCOPED CSS INTEGRASI - TIDAK DIUBAH SAMA SEKALI */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
 
@@ -309,13 +343,13 @@ export default function Login() {
           <form onSubmit={handleLoginSubmit}>
             {/* Input Email */}
             <div className="auth-input-group">
-              
               <input 
-                ref={emailInputRef} // 💡 Pengait useRef dipasang di sini
+                ref={emailInputRef}
                 type="email" 
                 placeholder="Email Address" 
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                disabled={loading}
                 required 
                 className="auth-input-control" 
               />
@@ -323,18 +357,28 @@ export default function Login() {
 
             {/* Input Password */}
             <div className="auth-input-group password-field">
-              <input type="password" placeholder="Password" required className="auth-input-control" />
+              <input 
+                type="password" 
+                placeholder="Password" 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={loading}
+                required 
+                className="auth-input-control" 
+              />
               <span className="password-toggle-icon">👁️</span>
             </div>
 
-            <button type="submit" className="auth-submit-btn">Login to Account</button>
+            <button type="submit" className="auth-submit-btn" disabled={loading}>
+              {loading ? "Memvalidasi..." : "Login to Account"}
+            </button>
           </form>
 
           <p className="auth-switch-prompt">
             Don't have an account? <Link to="/register" className="auth-link">Register</Link>
           </p>
           <Card>
-              <small>Member: member@gmail.com</small>
+              <small>Membaca database Supabase asli</small>
           </Card>
         </div>
       </div>

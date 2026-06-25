@@ -1,9 +1,16 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useRef, useEffect } from "react"; // 💡 Tambahkan useRef dan useEffect untuk tugas
+import { useRef, useEffect, useState } from "react"; // 💡 Tambahkan useState
+import { notesAPI } from "../../services/notesAPI"; // 💡 Sesuaikan dengan path notesAPI.js kamu
 
 export default function Register() {
   const navigate = useNavigate();
   
+  // 💡 State untuk menampung inputan form register
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
   // 💡 [useRef] Menembak autofocus ke kolom pertama (Username) saat halaman register terbuka
   const usernameInputRef = useRef(null);
 
@@ -13,15 +20,32 @@ export default function Register() {
     }
   }, []);
 
-  const handleRegisterSubmit = (e) => {
+  // 💡 Modifikasi fungsi submit ke Supabase
+  const handleRegisterSubmit = async (e) => {
     e.preventDefault();
-    alert("Registrasi Akun Baru Berhasil!");
-    navigate("/login"); 
+    try {
+      setLoading(true);
+      
+      // Kirim data ke tabel users di Supabase
+      await notesAPI.registerUser({
+        username: username,
+        email: email,
+        password: password,
+        role: "admin" // Default role saat daftar
+      });
+
+      alert("Registrasi Akun Baru Berhasil di Supabase!");
+      navigate("/login"); 
+    } catch (err) {
+      alert(`Gagal mendaftar: ${err.message}`);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="auth-screen-wrapper">
-      {/* SCOPED CSS INTEGRASI KONSISTEN */}
+      {/* SCOPED CSS INTEGRASI KONSISTEN - TIDAK DIUBAH SAMA SEKALI */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
 
@@ -300,9 +324,12 @@ export default function Register() {
             {/* Username */}
             <div className="auth-input-group">
               <input 
-                ref={usernameInputRef} // 💡 Pengait useRef dipasang di sini
+                ref={usernameInputRef}
                 type="text" 
                 placeholder="Username" 
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                disabled={loading}
                 required 
                 className="auth-input-control" 
               />
@@ -313,6 +340,9 @@ export default function Register() {
               <input 
                 type="email" 
                 placeholder="Email Address" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={loading}
                 required 
                 className="auth-input-control" 
               />
@@ -320,11 +350,21 @@ export default function Register() {
 
             {/* Password */}
             <div className="auth-input-group password-field">
-              <input type="password" placeholder="Password" required className="auth-input-control" />
+              <input 
+                type="password" 
+                placeholder="Password" 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={loading}
+                required 
+                className="auth-input-control" 
+              />
               <span className="password-toggle-icon">👁️</span>
             </div>
 
-            <button type="submit" className="auth-submit-btn">Register Account</button>
+            <button type="submit" className="auth-submit-btn" disabled={loading}>
+              {loading ? "Mendaftarkan..." : "Register Account"}
+            </button>
           </form>
 
           <p className="auth-switch-prompt">
