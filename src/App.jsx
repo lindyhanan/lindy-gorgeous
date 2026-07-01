@@ -13,6 +13,7 @@ const Login = lazy(() => import("./pages/auth/Login"));
 const Register = lazy(() => import("./pages/auth/Register"));
 const Logout = lazy(() => import("./pages/auth/Logout"));
 const Forgot = lazy(() => import("./pages/auth/Forgot")); // 💡 Tambahkan halaman Forgot.jsx
+const Guest = lazy(() => import("./pages/GuestHome")); // 💡 Tambahkan halaman Guest.jsx
 
 // ── LAYOUT UTAMA UNTUK HALAMAN YANG MEMAKAI SIDEBAR ──
 function DashboardLayout() {
@@ -80,6 +81,8 @@ function App() {
         <Route path="/forgot" element={<Forgot />} />
         <Route path="/logout" element={<Logout />} />
         <Route path="/member" element={<Member />} />
+        <Route path="/guest" element={<Guest />} />
+        <Route path="*" element={<div style={{ color: '#fff' }}>404 Not Found</div>} />
       </Routes>
     </Suspense>
   );
