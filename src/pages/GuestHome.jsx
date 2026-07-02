@@ -2,6 +2,12 @@ import Navbar from "../components/landing/Navbar";
 import Hero from "../components/landing/Hero";
 import About from "../components/landing/About";
 import Features from "../components/landing/Features";
+import Benefit from "../components/landing/Benefit";
+import Services from "../components/landing/Services";
+import MenuPreview from "../components/landing/MenuPreview";
+import Testimonials from "../components/landing/Testimonials";
+import FAQ from "../components/landing/FAQ";
+import Contact from "../components/landing/Contact";
 import CTA from "../components/landing/CTA";
 import Footer from "../components/landing/Footer";
 
@@ -40,6 +46,21 @@ export default function GuestHome() {
           overflow-x: hidden;
         }
 
+        /* Scroll-reveal animation */
+        .reveal {
+          opacity: 0;
+          transform: translateY(40px);
+          transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        .reveal.visible {
+          opacity: 1;
+          transform: translateY(0);
+        }
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+        .reveal-delay-3 { transition-delay: 0.3s; }
+        .reveal-delay-4 { transition-delay: 0.4s; }
+
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #0b0806; }
         ::-webkit-scrollbar-thumb { background: rgba(179, 139, 83, 0.3); border-radius: 3px; }
@@ -50,6 +71,12 @@ export default function GuestHome() {
         <Hero />
         <About />
         <Features />
+        <Benefit />
+        <Services />
+        <MenuPreview />
+        <Testimonials />
+        <FAQ />
+        <Contact />
         <CTA />
         <Footer />
       </div>

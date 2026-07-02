@@ -153,6 +153,10 @@ export default function Footer() {
                 <li><a href="#home" className="footer-link">Home</a></li>
                 <li><a href="#about" className="footer-link">About</a></li>
                 <li><a href="#features" className="footer-link">Features</a></li>
+                <li><a href="#services" className="footer-link">Services</a></li>
+                <li><a href="#menu" className="footer-link">Menu</a></li>
+                <li><a href="#faq" className="footer-link">FAQ</a></li>
+                <li><a href="#contact" className="footer-link">Contact</a></li>
                 <li><Link to="/login" className="footer-link">Login</Link></li>
                 <li><Link to="/register" className="footer-link">Register</Link></li>
               </ul>

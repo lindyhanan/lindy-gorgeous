@@ -195,6 +195,11 @@ export default function Navbar() {
         <div className="guest-nav-links">
           <a href="#about" onClick={(e) => handleAnchor(e, "about")} className="guest-nav-link">About</a>
           <a href="#features" onClick={(e) => handleAnchor(e, "features")} className="guest-nav-link">Features</a>
+          <a href="#services" onClick={(e) => handleAnchor(e, "services")} className="guest-nav-link">Services</a>
+          <a href="#menu" onClick={(e) => handleAnchor(e, "menu")} className="guest-nav-link">Menu</a>
+          <a href="#testimonials" onClick={(e) => handleAnchor(e, "testimonials")} className="guest-nav-link">Testimonials</a>
+          <a href="#faq" onClick={(e) => handleAnchor(e, "faq")} className="guest-nav-link">FAQ</a>
+          <a href="#contact" onClick={(e) => handleAnchor(e, "contact")} className="guest-nav-link">Contact</a>
         </div>
 
         {/* Right: Auth Buttons + Mobile Toggle */}
@@ -231,6 +236,11 @@ export default function Navbar() {
         <div className={`guest-mobile-menu ${isMobileOpen ? "open" : ""}`}>
           <a href="#about" onClick={(e) => handleAnchor(e, "about")} className="guest-nav-link">About</a>
           <a href="#features" onClick={(e) => handleAnchor(e, "features")} className="guest-nav-link">Features</a>
+          <a href="#services" onClick={(e) => handleAnchor(e, "services")} className="guest-nav-link">Services</a>
+          <a href="#menu" onClick={(e) => handleAnchor(e, "menu")} className="guest-nav-link">Menu</a>
+          <a href="#testimonials" onClick={(e) => handleAnchor(e, "testimonials")} className="guest-nav-link">Testimonials</a>
+          <a href="#faq" onClick={(e) => handleAnchor(e, "faq")} className="guest-nav-link">FAQ</a>
+          <a href="#contact" onClick={(e) => handleAnchor(e, "contact")} className="guest-nav-link">Contact</a>
           <div style={{ width: "100%", height: "1px", background: "rgba(179,139,83,0.2)", margin: "8px 0" }} />
           <Link
             to="/login"

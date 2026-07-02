@@ -11,6 +11,7 @@ function CountUp({ end, suffix, duration = 2000 }) {
   const [count, setCount] = useState(0);
   const ref = useRef(null);
   const hasStarted = useRef(false);
+  const rafRef = useRef(null);
 
   useEffect(() => {
     const el = ref.current;
@@ -26,16 +27,21 @@ function CountUp({ end, suffix, duration = 2000 }) {
             const progress = Math.min(elapsed / duration, 1);
             const eased = 1 - Math.pow(1 - progress, 3); // easeOutCubic
             setCount(Math.floor(eased * end));
-            if (progress < 1) requestAnimationFrame(animate);
+            if (progress < 1) {
+              rafRef.current = requestAnimationFrame(animate);
+            }
           };
-          requestAnimationFrame(animate);
+          rafRef.current = requestAnimationFrame(animate);
         }
       },
       { threshold: 0.3 }
     );
 
     observer.observe(el);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
   }, [end, duration]);
 
   return (
