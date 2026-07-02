@@ -8,14 +8,14 @@ const MENU_ITEMS = [
   { category: "Signature", name: "Hazelnut Affogato", price: "Rp 42.000", image: "https://images.unsplash.com/photo-1578645635737-6a88f706a5e3?w=300&q=80" },
   { category: "Signature", name: "Gula Aren Cream Latte", price: "Rp 35.000", image: "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=300&q=80" },
   // Classic
-  { category: "Classic", name: "Cappuccino", price: "Rp 28.000", image: "https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=300&q=80" },
+  { category: "Classic", name: "Cappuccino", price: "Rp 28.000", image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=300&q=80" },
   { category: "Classic", name: "Caffe Latte", price: "Rp 25.000", image: "https://images.unsplash.com/photo-1541167760496-1628856ab772?w=300&q=80" },
   { category: "Classic", name: "Espresso Doppio", price: "Rp 22.000", image: "https://images.unsplash.com/photo-1510707577719-ae7c14805e3a?w=300&q=80" },
   { category: "Classic", name: "Mocha", price: "Rp 30.000", image: "https://images.unsplash.com/photo-1578314675249-a6910f80cc4e?w=300&q=80" },
   // Non-Coffee
   { category: "Non-Coffee", name: "Matcha Latte", price: "Rp 32.000", image: "https://images.unsplash.com/photo-1536256263959-770b48d82b0a?w=300&q=80" },
-  { category: "Non-Coffee", name: "Chocolate Frappe", price: "Rp 35.000", image: "https://images.unsplash.com/photo-1558857563-b371033873b8?w=300&q=80" },
-  { category: "Non-Coffee", name: "Thai Milk Tea", price: "Rp 30.000", image: "https://images.unsplash.com/photo-1558857563-b371033873b8?w=300&q=80" },
+  { category: "Non-Coffee", name: "Chocolate Frappe", price: "Rp 35.000", image: "https://images.unsplash.com/photo-1527794828616-f3724cf13943?w=300&q=80" },
+  { category: "Non-Coffee", name: "Blue Sakura Tea", price: "Rp 30.000", image: "https://images.unsplash.com/photo-1558857563-b371033873b8?w=300&q=80" },
 ];
 
 export default function MenuPreview() {
