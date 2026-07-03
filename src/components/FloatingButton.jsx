@@ -23,8 +23,10 @@ export default function FloatingButton() {
         hover:bg-[#855347]
         transition-all
         duration-300
-        z-50
       "
+      style={{
+        zIndex: 3000,
+      }}
     >
       <FaWhatsapp size={30} />
     </a>

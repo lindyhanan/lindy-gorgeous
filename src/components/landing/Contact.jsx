@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { supabase } from "../../lib/supabase";
 
 const initialForm = { name: "", email: "", subject: "", message: "" };
 
@@ -6,6 +7,7 @@ export default function Contact() {
   const [form, setForm] = useState(initialForm);
   const [errors, setErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const validate = () => {
     const errs = {};
@@ -24,16 +26,40 @@ export default function Contact() {
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const errs = validate();
     if (Object.keys(errs).length > 0) {
       setErrors(errs);
       return;
     }
-    setSubmitted(true);
-    setForm(initialForm);
-    setTimeout(() => setSubmitted(false), 4000);
+
+    try {
+      setSubmitting(true);
+
+      // Insert ke tabel contacts
+      const { error } = await supabase.from("contacts").insert({
+        name: form.name,
+        email: form.email,
+        message: `${form.subject}: ${form.message}`,
+      });
+
+      if (error) throw error;
+
+      // Also subscribe to newsletter
+      await supabase.from("newsletters").upsert(
+        { email: form.email, is_active: true },
+        { onConflict: "email" }
+      );
+
+      setSubmitted(true);
+      setForm(initialForm);
+      setTimeout(() => setSubmitted(false), 4000);
+    } catch (err) {
+      setErrors({ submit: err.message });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -173,6 +199,11 @@ export default function Contact() {
           box-shadow: 0 10px 25px rgba(179, 139, 83, 0.4);
           transform: scale(1.03);
         }
+        .contact-submit:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+          transform: none !important;
+        }
         .contact-success {
           background: rgba(34, 197, 94, 0.1);
           border: 1px solid rgba(34, 197, 94, 0.3);
@@ -259,8 +290,8 @@ export default function Contact() {
               {errors.message && <p className="contact-error">{errors.message}</p>}
             </div>
 
-            <button type="submit" className="contact-submit">
-              Kirim Pesan
+            <button type="submit" className="contact-submit" disabled={submitting}>
+              {submitting ? "Mengirim..." : "Kirim Pesan"}
             </button>
 
             {submitted && (

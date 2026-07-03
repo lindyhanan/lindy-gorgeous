@@ -1,13 +1,14 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
-import { notesAPI } from "../../services/notesAPI"; // 💡 Sesuaikan path notesAPI.js kamu
+import { supabase } from "../../lib/supabase";
 
 export default function Forgot() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // 💡 [useRef] Pointer otomatis membidik kolom email saat halaman lupa password terbuka
+  const [error, setError] = useState("");
+
   const emailInputRef = useRef(null);
 
   useEffect(() => {
@@ -18,22 +19,20 @@ export default function Forgot() {
 
   const handleForgotSubmit = async (e) => {
     e.preventDefault();
+    setError("");
     try {
       setLoading(true);
 
-      // 💡 Cek ke Supabase apakah email ini terdaftar atau tidak
-      const userList = await notesAPI.getUserByEmail(email);
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/login`,
+      });
 
-      if (userList.length === 0) {
-        alert("Email tidak ditemukan di database Supabase!");
-        return;
-      }
+      if (error) throw error;
 
-      // Simulasi pengiriman link reset (Karena RLS mati & via REST API biasa untuk tugas kuliah)
-      alert(`Link instruksi reset password telah dikirim ke email: ${email}`);
+      alert(`✅ Link reset password telah dikirim ke: ${email}`);
       navigate("/login");
     } catch (err) {
-      alert(`Terjadi kesalahan: ${err.message}`);
+      setError(err.message);
     } finally {
       setLoading(false);
     }
@@ -90,7 +89,7 @@ export default function Forgot() {
         .auth-brand-logo {
           font-size: 1.5rem;
           font-weight: 700;
-          color: #b07e66;
+          color: #b38b53;
           margin-bottom: 40px;
           letter-spacing: 0.5px;
         }
@@ -103,7 +102,7 @@ export default function Forgot() {
         }
 
         .auth-banner-content h1 span {
-          color: #92634e;
+          color: #b38b53;
         }
 
         .auth-banner-content p {
@@ -187,7 +186,22 @@ export default function Forgot() {
         }
 
         .auth-submit-btn:hover {
-          background-color: #b07e66;
+          background-color: #967241;
+        }
+
+        .auth-submit-btn:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+
+        .auth-error {
+          background: rgba(239, 68, 68, 0.1);
+          border: 1px solid rgba(239,68,68,0.3);
+          color: #fca5a5;
+          padding: 12px;
+          border-radius: 10px;
+          font-size: 0.85rem;
+          margin-bottom: 16px;
         }
 
         .auth-switch-prompt {
@@ -198,7 +212,7 @@ export default function Forgot() {
         }
 
         .auth-link {
-          color: #b07e66;
+          color: #b38b53;
           text-decoration: none;
           font-weight: 500;
           margin-left: 4px;
@@ -224,8 +238,8 @@ export default function Forgot() {
       <div className="auth-visual-banner">
         <div className="auth-banner-overlay"></div>
         <div className="auth-banner-content">
-          <h1>Dogee <br /><span>Cafe</span></h1>
-          <p>☕ Dont you remember your coffe?</p>
+          <h1>Forgot <br /><span>Password</span></h1>
+          <p>Masukkan email untuk menerima link reset password.</p>
         </div>
       </div>
 
@@ -236,6 +250,8 @@ export default function Forgot() {
             <h2>Forgot Password</h2>
             <p>Masukkan email untuk reset password.</p>
           </div>
+
+          {error && <div className="auth-error">{error}</div>}
 
           <form onSubmit={handleForgotSubmit}>
             {/* Input Email */}
@@ -253,7 +269,7 @@ export default function Forgot() {
             </div>
 
             <button type="submit" className="auth-submit-btn" disabled={loading}>
-              {loading ? "Checking..." : "Send Reset Link"}
+              {loading ? "Mengirim..." : "Send Reset Link"}
             </button>
           </form>
 

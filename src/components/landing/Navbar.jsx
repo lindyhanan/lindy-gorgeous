@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function Navbar() {
+  const { user, profile, isLoading, isAdmin, isMember, signOut } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
@@ -122,6 +124,57 @@ export default function Navbar() {
           background: #967241;
           box-shadow: 0 0 15px rgba(179,139,83,0.5);
         }
+        .guest-user-badge {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 6px 16px 6px 6px;
+          background: rgba(179,139,83,0.1);
+          border: 1px solid rgba(179,139,83,0.2);
+          border-radius: 999px;
+          color: #ffffff;
+          font-size: 12px;
+          font-weight: 600;
+          text-decoration: none;
+          transition: all 0.3s ease;
+        }
+        .guest-user-badge:hover {
+          background: rgba(179,139,83,0.2);
+          border-color: rgba(179,139,83,0.4);
+        }
+        .guest-user-avatar {
+          width: 28px;
+          height: 28px;
+          border-radius: 50%;
+          background: #b38b53;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 12px;
+          font-weight: 700;
+          color: #0b0806;
+        }
+        .guest-tier-badge {
+          font-size: 9px;
+          padding: 2px 8px;
+          border-radius: 999px;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          font-weight: 700;
+        }
+        .guest-tier-silver { background: rgba(192,192,192,0.2); color: #c0c0c0; }
+        .guest-tier-gold { background: rgba(255,215,0,0.2); color: #ffd700; }
+        .guest-tier-platinum { background: rgba(229,228,226,0.2); color: #e5e4e2; }
+        .guest-admin-badge {
+          background: rgba(239,68,68,0.15);
+          color: #fca5a5;
+          font-size: 10px;
+          padding: 2px 10px;
+          border-radius: 4px;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
         .guest-mobile-btn {
           display: none;
           background: none;
@@ -213,23 +266,38 @@ export default function Navbar() {
             {isMobileOpen ? "✕" : "☰"}
           </button>
 
-          {/* Login */}
-          <Link
-            to="/login"
-            className="guest-btn-login"
-            style={btnBase}
-          >
-            Login
-          </Link>
-
-          {/* Register */}
-          <Link
-            to="/register"
-            className="guest-btn-register"
-            style={btnBase}
-          >
-            Register
-          </Link>
+          {isLoading ? null : user && profile ? (
+            <Link
+              to={isAdmin ? "/" : "/member"}
+              className="guest-user-badge"
+            >
+              <div className="guest-user-avatar">
+                {profile.full_name?.charAt(0)?.toUpperCase() || "U"}
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: "1px" }}>
+                <span style={{ fontSize: "11px", lineHeight: 1.2 }}>
+                  {profile.full_name || user.email}
+                </span>
+                <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                  {isAdmin ? (
+                    <span className="guest-admin-badge">Admin</span>
+                  ) : (
+                    <span className={`guest-tier-badge guest-tier-${profile.tier?.toLowerCase() || 'silver'}`}>
+                      {profile.tier || "SILVER"}
+                    </span>
+                  )}
+                  <span style={{ color: "#b38b53", fontSize: "11px", fontWeight: 700 }}>
+                    {profile.total_points || 0} pts
+                  </span>
+                </div>
+              </div>
+            </Link>
+          ) : (
+            <>
+              <Link to="/login" className="guest-btn-login" style={btnBase}>Login</Link>
+              <Link to="/register" className="guest-btn-register" style={btnBase}>Register</Link>
+            </>
+          )}
         </div>
 
         {/* Mobile Menu */}
@@ -242,13 +310,23 @@ export default function Navbar() {
           <a href="#faq" onClick={(e) => handleAnchor(e, "faq")} className="guest-nav-link">FAQ</a>
           <a href="#contact" onClick={(e) => handleAnchor(e, "contact")} className="guest-nav-link">Contact</a>
           <div style={{ width: "100%", height: "1px", background: "rgba(179,139,83,0.2)", margin: "8px 0" }} />
-          <Link
-            to="/login"
-            onClick={() => setIsMobileOpen(false)}
-            style={{ ...btnBase, border: "1px solid #b38b53", background: "transparent", color: "#fff", width: "100%", textAlign: "center" }}
-          >
-            Login
-          </Link>
+          {user && profile ? (
+            <Link
+              to={isAdmin ? "/" : "/member"}
+              onClick={() => setIsMobileOpen(false)}
+              style={{ ...btnBase, border: "1px solid #b38b53", background: "transparent", color: "#fff", width: "100%", textAlign: "center" }}
+            >
+              Dashboard
+            </Link>
+          ) : (
+            <Link
+              to="/login"
+              onClick={() => setIsMobileOpen(false)}
+              style={{ ...btnBase, border: "1px solid #b38b53", background: "transparent", color: "#fff", width: "100%", textAlign: "center" }}
+            >
+              Login
+            </Link>
+          )}
         </div>
       </nav>
     </>

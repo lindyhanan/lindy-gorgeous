@@ -1,43 +1,53 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useRef, useEffect, useState } from "react"; // 💡 Tambahkan useState
-import { notesAPI } from "../../services/notesAPI"; // 💡 Sesuaikan dengan path notesAPI.js kamu
+import { useRef, useEffect, useState } from "react";
+import { supabase } from "../../lib/supabase";
 
 export default function Register() {
   const navigate = useNavigate();
   
   // 💡 State untuk menampung inputan form register
-  const [username, setUsername] = useState("");
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  // 💡 [useRef] Menembak autofocus ke kolom pertama (Username) saat halaman register terbuka
-  const usernameInputRef = useRef(null);
+  const nameInputRef = useRef(null);
 
   useEffect(() => {
-    if (usernameInputRef.current) {
-      usernameInputRef.current.focus();
+    if (nameInputRef.current) {
+      nameInputRef.current.focus();
     }
   }, []);
 
-  // 💡 Modifikasi fungsi submit ke Supabase
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
+    setError("");
     try {
       setLoading(true);
-      
-      // Kirim data ke tabel users di Supabase
-      await notesAPI.registerUser({
-        username: username,
-        email: email,
-        password: password,
-        role: "admin" // Default role saat daftar
+
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: fullName,
+          },
+        },
       });
 
-      alert("Registrasi Akun Baru Berhasil di Supabase!");
-      navigate("/login"); 
+      if (error) throw error;
+
+      if (data.user?.identities?.length === 0) {
+        alert("Email ini sudah terdaftar. Silakan login.");
+        navigate("/login");
+        return;
+      }
+
+      alert("✅ Registrasi berhasil! Silakan cek email Anda untuk konfirmasi, lalu login.");
+      navigate("/login");
     } catch (err) {
-      alert(`Gagal mendaftar: ${err.message}`);
+      setError(err.message);
     } finally {
       setLoading(false);
     }
@@ -94,7 +104,7 @@ export default function Register() {
         .auth-brand-logo {
           font-size: 1.5rem;
           font-weight: 700;
-          color: #b07e66;
+          color: #b38b53;
           margin-bottom: 40px;
           letter-spacing: 0.5px;
         }
@@ -107,7 +117,7 @@ export default function Register() {
         }
 
         .auth-banner-content h1 span {
-          color: #92634e;
+          color: #b38b53;
         }
 
         .auth-banner-content p {
@@ -257,7 +267,22 @@ export default function Register() {
         }
 
         .auth-submit-btn:hover {
-          background-color: #b07e66;
+          background-color: #967241;
+        }
+
+        .auth-submit-btn:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+
+        .auth-error {
+          background: rgba(239, 68, 68, 0.1);
+          border: 1px solid rgba(239,68,68,0.3);
+          color: #fca5a5;
+          padding: 12px;
+          border-radius: 10px;
+          font-size: 0.85rem;
+          margin-bottom: 16px;
         }
 
         .auth-switch-prompt {
@@ -268,7 +293,7 @@ export default function Register() {
         }
 
         .auth-link {
-          color: #b07e66;
+          color: #b38b53;
           text-decoration: none;
           font-weight: 500;
           margin-left: 4px;
@@ -295,7 +320,7 @@ export default function Register() {
         <div className="auth-banner-overlay"></div>
         <div className="auth-banner-content">
           <h1>Dogee <br /><span>Cafe</span></h1>
-          <p>☕ Dont you remember your coffe?</p>
+          <p>Daftar dan nikmati berbagai keuntungan member eksklusif!</p>
         </div>
       </div>
 
@@ -304,31 +329,20 @@ export default function Register() {
         <div className="auth-card-box">
           <div className="auth-header-zone">
             <h2>Create Account</h2>
-            <p>Daftarkan akun admin kasir baru Anda di sini.</p>
+            <p>Daftar akun member Dogee Coffee.</p>
           </div>
 
-          <div className="auth-social-buttons">
-            <button type="button" className="auth-social-btn" onClick={() => alert("Google Register")}>
-              <span>🔴</span> Google
-            </button>
-            <button type="button" className="auth-social-btn" onClick={() => alert("FB Register")}>
-              <span>📘</span> Facebook
-            </button>
-          </div>
-
-          <div className="auth-social-divider">
-            <span>- OR -</span>
-          </div>
+          {error && <div className="auth-error">{error}</div>}
 
           <form onSubmit={handleRegisterSubmit}>
             {/* Username */}
             <div className="auth-input-group">
               <input 
-                ref={usernameInputRef}
+                ref={nameInputRef}
                 type="text" 
-                placeholder="Username" 
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Nama Lengkap" 
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
                 disabled={loading}
                 required 
                 className="auth-input-control" 
@@ -349,17 +363,17 @@ export default function Register() {
             </div>
 
             {/* Password */}
-            <div className="auth-input-group password-field">
+            <div className="auth-input-group">
               <input 
                 type="password" 
-                placeholder="Password" 
+                placeholder="Password (min. 6 karakter)" 
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={loading}
-                required 
+                required
+                minLength={6}
                 className="auth-input-control" 
               />
-              <span className="password-toggle-icon">👁️</span>
             </div>
 
             <button type="submit" className="auth-submit-btn" disabled={loading}>

@@ -1,7 +1,8 @@
-import React, { lazy, Suspense, useState, useEffect } from "react"; // 💡 PERBAIKAN: Menambahkan lazy, Suspense, useState, dan useEffect
+import React, { lazy, Suspense, useState, useEffect } from "react";
 import { Routes, Route, Outlet } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
 import Loading from "./components/Loading";
+import { AuthProvider } from "./contexts/AuthContext";
 
 // Lazy loading komponen halaman
 const Dashboard = lazy(() => import("./pages/Dashboard"));
@@ -60,6 +61,7 @@ function App() {
   };
 
   return (
+    <AuthProvider>
     <Suspense fallback={<Loading />}>
       <Routes>
         {/* ── BUNDEL 1: HALAMAN INTERNAL (MEMAKAI SIDEBAR) ── */}
@@ -85,6 +87,7 @@ function App() {
         <Route path="*" element={<div style={{ color: '#fff' }}>404 Not Found</div>} />
       </Routes>
     </Suspense>
+    </AuthProvider>
   );
 }
 

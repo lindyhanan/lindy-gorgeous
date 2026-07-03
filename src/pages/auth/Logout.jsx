@@ -1,17 +1,21 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "../../lib/supabase";
 
 export default function Logout() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Memberikan jeda sedikit agar user bisa melihat animasi logout yang estetik
-    const timer = setTimeout(() => {
-      alert("Anda telah berhasil logout!");
-      navigate("/login"); // Diarahkan kembali ke login setelah session bersih
-    }, 1800);
-
-    return () => clearTimeout(timer);
+    const doLogout = async () => {
+      await supabase.auth.signOut();
+      
+      setTimeout(() => {
+        alert("Anda telah berhasil logout!");
+        navigate("/login");
+      }, 1500);
+    };
+    
+    doLogout();
   }, [navigate]);
 
   return (
@@ -67,7 +71,7 @@ export default function Logout() {
         .coffee-loader {
           width: 48px;
           height: 48px;
-          border: 3px solid rgba(146, 99, 78, 0.2);
+          border: 3px solid rgba(179, 139, 83, 0.2);
           border-radius: 50%;
           display: inline-block;
           position: relative;
@@ -75,19 +79,17 @@ export default function Logout() {
           animation: rotation 1s linear infinite;
           margin-bottom: 24px;
         }
-        
         .coffee-loader::after {
-          content: '';  
+          content: '';
           box-sizing: border-box;
           position: absolute;
           left: 0;
           top: 0;
-          background: #92634e;
+          background: #b38b53;
           width: 12px;
           height: 12px;
           border-radius: 50%;
         }
-
         @keyframes rotation {
           0% { transform: rotate(0deg); }
           100% { transform: rotate(360deg); }

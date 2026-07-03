@@ -1,13 +1,14 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
-import { notesAPI } from "../../services/notesAPI"; // 💡 Sesuaikan path notesAPI.js kamu
+import { supabase } from "../../lib/supabase";
 
 export default function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState(""); 
-  const [loading, setLoading] = useState(false); 
-  
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
   const emailInputRef = useRef(null);
 
   useEffect(() => {
@@ -18,37 +19,32 @@ export default function Login() {
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
+    setError("");
     try {
       setLoading(true);
 
-      const userList = await notesAPI.getUserByEmail(email);
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-      if (userList.length === 0) {
-        alert("Email tidak terdaftar di database Supabase!");
-        return;
-      }
+      if (error) throw error;
 
-      const userTerdaftar = userList[0];
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", data.user.id)
+        .single();
 
-      if (userTerdaftar.password !== password) {
-        alert("Password yang Anda masukkan salah!");
-        return;
-      }
-      alert(`Login Berhasil! Selamat datang, ${userTerdaftar.username}`);
-
-      localStorage.setItem("user_name", userTerdaftar.username);
-      localStorage.setItem("user_role", userTerdaftar.role);
-
-      if (userTerdaftar.role === "member") {
-        navigate("/member");
-      } else if (userTerdaftar.role === "admin") {
+      if (profile?.role === "ADMIN") {
         navigate("/");
+      } else if (profile?.role === "MEMBER") {
+        navigate("/member");
       } else {
         navigate("/guest");
       }
-
     } catch (err) {
-      alert(`Terjadi kesalahan login: ${err.message}`);
+      setError(err.message);
     } finally {
       setLoading(false);
     }
@@ -109,7 +105,7 @@ export default function Login() {
         }
 
         .auth-banner-content h1 span {
-          color: #92634e;
+          color: #b38b53;
         }
 
         .auth-banner-content p {
@@ -154,62 +150,6 @@ export default function Login() {
           color: #a3a3a3;
           font-size: 0.9rem;
           margin: 0;
-        }
-
-        .auth-social-buttons {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 12px;
-          margin-bottom: 24px;
-        }
-
-        .auth-social-btn {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;
-          padding: 12px;
-          background-color: #1e1e1e;
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 12px;
-          color: #ffffff;
-          font-size: 0.85rem;
-          font-weight: 500;
-          cursor: pointer;
-          transition: all 0.2s ease;
-        }
-
-        .auth-social-btn:hover {
-          background-color: #2a2a2a;
-          border-color: rgba(255, 255, 255, 0.2);
-        }
-
-        .auth-social-divider {
-          text-align: center;
-          margin: 24px 0;
-          position: relative;
-        }
-
-        .auth-social-divider::before {
-          content: "";
-          position: absolute;
-          top: 50%;
-          left: 0;
-          width: 100%;
-          height: 1px;
-          background-color: rgba(255, 255, 255, 0.1);
-          z-index: 1;
-        }
-
-        .auth-social-divider span {
-          background-color: #121212;
-          padding: 0 16px;
-          color: #666666;
-          font-size: 0.8rem;
-          font-weight: 600;
-          position: relative;
-          z-index: 2;
-          letter-spacing: 1px;
         }
 
         .auth-input-group {
@@ -257,7 +197,22 @@ export default function Login() {
         }
 
         .auth-submit-btn:hover {
-          background-color: #b07e66;
+          background-color: #967241;
+        }
+
+        .auth-submit-btn:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+
+        .auth-error {
+          background: rgba(239, 68, 68, 0.1);
+          border: 1px solid rgba(239,68,68,0.3);
+          color: #fca5a5;
+          padding: 12px;
+          border-radius: 10px;
+          font-size: 0.85rem;
+          margin-bottom: 16px;
         }
 
         .auth-switch-prompt {
@@ -268,7 +223,7 @@ export default function Login() {
         }
 
         .auth-link {
-          color: #b07e66;
+          color: #b38b53;
           text-decoration: none;
           font-weight: 500;
           margin-left: 4px;
@@ -295,7 +250,7 @@ export default function Login() {
         <div className="auth-banner-overlay"></div>
         <div className="auth-banner-content">
           <h1>Dogee <br /><span>Cafe</span></h1>
-          <p>☕ Dont you remember your coffe?</p>
+          <p>☕ Don't you remember your coffee?</p>
         </div>
       </div>
 
@@ -304,21 +259,10 @@ export default function Login() {
         <div className="auth-card-box">
           <div className="auth-header-zone">
             <h2>Welcome Back</h2>
-            <p>Silakan masuk ke akun admin kasir Anda.</p>
+            <p>Masuk ke akun Dogee Coffee Anda.</p>
           </div>
 
-          <div className="auth-social-buttons">
-            <button type="button" className="auth-social-btn" onClick={() => alert("Google Login")}>
-              <span>🔴</span> Google
-            </button>
-            <button type="button" className="auth-social-btn" onClick={() => alert("FB Login")}>
-              <span>📘</span> Facebook
-            </button>
-          </div>
-
-          <div className="auth-social-divider">
-            <span>- OR -</span>
-          </div>
+          {error && <div className="auth-error">{error}</div>}
 
           <form onSubmit={handleLoginSubmit}>
             {/* Input Email */}
@@ -354,7 +298,7 @@ export default function Login() {
             </div>
 
             <button type="submit" className="auth-submit-btn" disabled={loading}>
-              {loading ? "Memvalidasi..." : "Login to Account"}
+              {loading ? "Memproses..." : "Login to Account"}
             </button>
           </form>
 

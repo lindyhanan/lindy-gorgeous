@@ -111,6 +111,9 @@ export default function Testimonials() {
           background: #b38b53;
           margin: 20px auto 0;
         }
+        .testi-card-wrap {
+          width: 100%;
+        }
         .testi-card {
           background: rgba(15, 12, 10, 0.6);
           backdrop-filter: blur(16px);
@@ -148,7 +151,7 @@ export default function Testimonials() {
           margin-right: auto;
         }
         .testi-quote::before {
-          content: '"';
+          content: '\u201c';
           color: #b38b53;
           font-size: 28px;
           font-weight: 700;
@@ -157,7 +160,7 @@ export default function Testimonials() {
           margin-right: 4px;
         }
         .testi-quote::after {
-          content: '"';
+          content: '\u201d';
           color: #b38b53;
           font-size: 28px;
           font-weight: 700;
@@ -210,6 +213,7 @@ export default function Testimonials() {
           display: flex;
           align-items: center;
           justify-content: center;
+          font-family: 'Poppins', sans-serif;
         }
         .testi-arrow:hover {
           background: rgba(179, 139, 83, 0.2);
@@ -254,46 +258,42 @@ export default function Testimonials() {
           </div>
 
           <div
-            className="testi-card"
+            className="testi-card-wrap"
             onMouseEnter={() => setIsAutoPlaying(false)}
             onMouseLeave={() => setIsAutoPlaying(true)}
           >
-            {/* Stars */}
-            <div className="testi-stars">
-              {[1, 2, 3, 4, 5].map((s) => (
-                <span key={s} className={`testi-star ${s <= t.rating ? "filled" : "empty"}`}>
-                  ★
-                </span>
-              ))}
-            </div>
+            <div className="testi-card">
+              <div className="testi-stars">
+                {[1, 2, 3, 4, 5].map((s) => (
+                  <span key={s} className={`testi-star ${s <= t.rating ? "filled" : "empty"}`}>★</span>
+                ))}
+              </div>
 
-            {/* Quote */}
-            <p className="testi-quote">{t.quote}</p>
+              <p className="testi-quote">{t.quote}</p>
 
-            {/* Author */}
-            <div className="testi-author">
-              <img src={t.avatar} alt={t.name} className="testi-avatar" />
-              <div>
-                <p className="testi-name">{t.name}</p>
-                <p className="testi-role">{t.role}</p>
+              <div className="testi-author">
+                <img src={t.avatar} alt={t.name} className="testi-avatar" />
+                <div>
+                  <p className="testi-name">{t.name}</p>
+                  <p className="testi-role">{t.role}</p>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Navigation */}
-          <div className="testi-nav">
-            <button className="testi-arrow" onClick={prev} aria-label="Previous">‹</button>
-            <div className="testi-dots">
-              {TESTIMONIALS.map((_, idx) => (
-                <button
-                  key={idx}
-                  className={`testi-dot ${idx === current ? "active" : ""}`}
-                  onClick={() => { setCurrent(idx); setIsAutoPlaying(false); }}
-                  aria-label={`Go to testimonial ${idx + 1}`}
-                />
-              ))}
+            <div className="testi-nav">
+              <button className="testi-arrow" onClick={prev} aria-label="Previous">‹</button>
+              <div className="testi-dots">
+                {TESTIMONIALS.map((_, idx) => (
+                  <button
+                    key={idx}
+                    className={`testi-dot ${idx === current ? "active" : ""}`}
+                    onClick={() => { setCurrent(idx); setIsAutoPlaying(false); }}
+                    aria-label={`Go to testimonial ${idx + 1}`}
+                  />
+                ))}
+              </div>
+              <button className="testi-arrow" onClick={next} aria-label="Next">›</button>
             </div>
-            <button className="testi-arrow" onClick={next} aria-label="Next">›</button>
           </div>
         </div>
       </section>

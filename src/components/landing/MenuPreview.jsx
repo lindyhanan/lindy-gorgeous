@@ -1,30 +1,44 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "../../lib/supabase";
 
 const MENU_CATEGORIES = ["All", "Signature", "Classic", "Non-Coffee"];
 
-const MENU_ITEMS = [
-  // Signature
-  { category: "Signature", name: "Caramel Signature Latte", price: "Rp 38.000", image: "https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=300&q=80" },
-  { category: "Signature", name: "Hazelnut Affogato", price: "Rp 42.000", image: "https://images.unsplash.com/photo-1578645635737-6a88f706a5e3?w=300&q=80" },
-  { category: "Signature", name: "Gula Aren Cream Latte", price: "Rp 35.000", image: "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=300&q=80" },
-  // Classic
-  { category: "Classic", name: "Cappuccino", price: "Rp 28.000", image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=300&q=80" },
-  { category: "Classic", name: "Caffe Latte", price: "Rp 25.000", image: "https://images.unsplash.com/photo-1541167760496-1628856ab772?w=300&q=80" },
-  { category: "Classic", name: "Espresso Doppio", price: "Rp 22.000", image: "https://images.unsplash.com/photo-1510707577719-ae7c14805e3a?w=300&q=80" },
-  { category: "Classic", name: "Mocha", price: "Rp 30.000", image: "https://images.unsplash.com/photo-1578314675249-a6910f80cc4e?w=300&q=80" },
-  // Non-Coffee
-  { category: "Non-Coffee", name: "Matcha Latte", price: "Rp 32.000", image: "https://images.unsplash.com/photo-1536256263959-770b48d82b0a?w=300&q=80" },
-  { category: "Non-Coffee", name: "Chocolate Frappe", price: "Rp 35.000", image: "https://images.unsplash.com/photo-1527794828616-f3724cf13943?w=300&q=80" },
-  { category: "Non-Coffee", name: "Blue Sakura Tea", price: "Rp 30.000", image: "https://images.unsplash.com/photo-1558857563-b371033873b8?w=300&q=80" },
-];
+function formatPrice(num) {
+  return "Rp " + Number(num).toLocaleString("id-ID");
+}
 
 export default function MenuPreview() {
+  const [menus, setMenus] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState("All");
+
+  useEffect(() => {
+    async function fetchMenus() {
+      try {
+        const { data, error } = await supabase
+          .from("products")
+          .select("*")
+          .order("id");
+        if (error) throw error;
+        if (data && data.length > 0) {
+          setMenus(data);
+        }
+      } catch (err) {
+        console.error("Gagal fetch menu:", err.message);
+        // Fallback: if table doesn't exist yet, error silently
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchMenus();
+  }, []);
+
+  const displayMenus = menus.length > 0 ? menus : [];
 
   const filteredItems =
     activeCategory === "All"
-      ? MENU_ITEMS
-      : MENU_ITEMS.filter((item) => item.category === activeCategory);
+      ? displayMenus
+      : displayMenus.filter((item) => item.category === activeCategory);
 
   return (
     <>
@@ -179,20 +193,30 @@ export default function MenuPreview() {
             ))}
           </div>
 
-          <div className="menu-grid">
-            {filteredItems.map((item, idx) => (
-              <div key={idx} className="menu-item">
-                <div className="menu-item-img-wrap">
-                  <img src={item.image} alt={item.name} className="menu-item-img" loading="lazy" />
+          {loading ? (
+            <div style={{ textAlign: "center", padding: "40px 0", color: "#666" }}>
+              Loading menu...
+            </div>
+          ) : filteredItems.length === 0 ? (
+            <div style={{ textAlign: "center", padding: "40px 0", color: "#666" }}>
+              Menu tidak tersedia untuk kategori ini.
+            </div>
+          ) : (
+            <div className="menu-grid">
+              {filteredItems.map((item, idx) => (
+                <div key={item.id || idx} className="menu-item">
+                  <div className="menu-item-img-wrap">
+                    <img src={item.image_url} alt={item.name} className="menu-item-img" loading="lazy" />
+                  </div>
+                  <div className="menu-item-info">
+                    <p className="menu-item-cat">{item.category}</p>
+                    <h4 className="menu-item-name">{item.name}</h4>
+                    <p className="menu-item-price">{formatPrice(item.price_base)}</p>
+                  </div>
                 </div>
-                <div className="menu-item-info">
-                  <p className="menu-item-cat">{item.category}</p>
-                  <h4 className="menu-item-name">{item.name}</h4>
-                  <p className="menu-item-price">{item.price}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
     </>
