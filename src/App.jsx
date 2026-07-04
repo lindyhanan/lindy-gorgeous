@@ -53,7 +53,7 @@ function App() {
       item: item.name,
       category: item.category || "Kopi",
       type: orderType,
-      amount: item.price * item.quantity,
+      amount: item.price * (item.qty || item.quantity || 1),
       date: today
     }));
 

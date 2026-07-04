@@ -1,5 +1,5 @@
 /**
- * Tier Discount Utility — Dogee Coffee CRM
+ * Tier Discount Utility — SudutRasa CRM
  *
  * Menghitung harga final berdasarkan tier member.
  * SILVER: 0% diskon

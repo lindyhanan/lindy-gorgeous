@@ -1,6 +1,7 @@
 import { useState, memo, useCallback } from "react";
 import Header from "../components/Header";
 import CategoryTabs from "../components/CategoryTabs";
+import { supabase } from "../lib/supabase";
 
 const ALL_PRODUCTS = [
   {
@@ -576,20 +577,87 @@ function ProductCard({ product, onAdd }) {
   );
 }
 
-function OrderPanel({ items = [] }) {
-  const [activeDelivery, setActiveDelivery] = useState("Delivery");
+function OrderPanel({ items = [], onPlaceOrder, onClearCart }) {
+  const [activeDelivery, setActiveDelivery] = useState("Dine in");
   const [activePayment, setActivePayment] = useState("Cash");
+
+  // Member lookup by phone
+  const [phoneInput, setPhoneInput] = useState("");
+  const [memberFound, setMemberFound] = useState(null);
+  const [searchingMember, setSearchingMember] = useState(false);
+  const [processing, setProcessing] = useState(false);
 
   const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
   const tax = Math.round(subtotal * 0.1);
   const total = subtotal + tax;
   const fmt = (n) => "Rp " + n.toLocaleString("id-ID");
 
-  const handleCheckout = () => {
-    if (items.length > 0) {
+  // Lookup member by phone number
+  const handleLookupMember = async () => {
+    if (!phoneInput.trim()) return;
+    try {
+      setSearchingMember(true);
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("phone_number", phoneInput.trim())
+        .single();
+
+      if (error) {
+        setMemberFound(null);
+        alert("❌ Member tidak ditemukan dengan nomor HP tersebut.");
+        return;
+      }
+      setMemberFound(data);
+    } catch (err) {
+      alert(`Error: ${err.message}`);
+    } finally {
+      setSearchingMember(false);
+    }
+  };
+
+  const handleCheckout = async () => {
+    if (items.length === 0) return;
+
+    try {
+      setProcessing(true);
+
+      // Calculate points earned (1 point per Rp 1,000)
+      const pointsEarned = Math.floor(subtotal / 1000);
+
+      // If member found, update their points in DB
+      if (memberFound) {
+        const newPoints = (memberFound.total_points || 0) + pointsEarned;
+        const { error: updateError } = await supabase
+          .from("profiles")
+          .update({ total_points: newPoints })
+          .eq("id", memberFound.id);
+
+        if (updateError) throw updateError;
+      }
+
+      // Call onPlaceOrder to add to transactions & analytics
+      if (onPlaceOrder) {
+        onPlaceOrder(items, activeDelivery);
+      }
+
+      // Clear cart after successful checkout
+      if (onClearCart) onClearCart();
+
       alert(
-        `✅ Pesanan berhasil!\n\n${activeDelivery}\n${items.reduce((s, i) => s + i.qty, 0)} items\n${activePayment}\nTotal: ${fmt(total)}`
+        `✅ Pesanan berhasil!\n\n` +
+        `${activeDelivery}\n` +
+        `${items.reduce((s, i) => s + i.qty, 0)} items\n` +
+        `${activePayment}\n` +
+        `Total: ${fmt(total)}\n` +
+        (memberFound
+          ? `\n🎉 ${memberFound.full_name} mendapat ${pointsEarned} pts!`
+          : `\n💡 Daftarkan nomor HP member untuk akumulasi poin.`)
       );
+    } catch (err) {
+      alert(`Gagal: ${err.message}`);
+    } finally {
+      setProcessing(false);
     }
   };
 
@@ -642,6 +710,62 @@ function OrderPanel({ items = [] }) {
 
       <div className="order-divider" />
 
+      {/* ── MEMBER PHONE INPUT ── */}
+      <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+        <span style={{ fontSize: 12, fontWeight: 600, color: "#7d7771" }}>
+          📞 Cari Member (via No. HP)
+        </span>
+        <div style={{ display: "flex", gap: "8px" }}>
+          <input
+            type="text"
+            placeholder="08xxxxxxx"
+            value={phoneInput}
+            onChange={(e) => { setPhoneInput(e.target.value); setMemberFound(null); }}
+            style={{
+              flex: 1, padding: "8px 12px", borderRadius: "10px",
+              border: "1px solid rgba(0,0,0,0.1)",
+              background: "#ffffff", color: "#2c2520",
+              fontSize: 12, outline: "none",
+              fontFamily: "'Poppins', sans-serif",
+            }}
+          />
+          <button onClick={handleLookupMember} disabled={searchingMember}
+            style={{
+              padding: "8px 14px", borderRadius: "10px", border: "none",
+              background: "#92634e", color: "#ffffff", fontWeight: 600,
+              fontSize: 11, cursor: "pointer", whiteSpace: "nowrap",
+              fontFamily: "'Poppins', sans-serif",
+              opacity: searchingMember ? 0.6 : 1,
+            }}>
+            {searchingMember ? "..." : "Cari"}
+          </button>
+        </div>
+        {memberFound && (
+          <div style={{
+            display: "flex", alignItems: "center", gap: "8px",
+            padding: "8px 12px", background: "rgba(146,99,78,0.08)",
+            borderRadius: "10px", fontSize: 12,
+          }}>
+            <span>👤</span>
+            <div style={{ flex: 1 }}>
+              <strong style={{ color: "#2c2520" }}>{memberFound.full_name}</strong>
+              <span style={{ color: "#92634e", marginLeft: 8 }}>
+                {memberFound.total_points || 0} pts
+              </span>
+            </div>
+            <button onClick={() => { setMemberFound(null); setPhoneInput(""); }}
+              style={{
+                background: "none", border: "none", cursor: "pointer",
+                color: "#a19a93", fontSize: 14, padding: 0,
+              }}>
+              ✕
+            </button>
+          </div>
+        )}
+      </div>
+
+      <div className="order-divider" />
+
       <div className="order-summary">
         <div className="summary-row">
           <span>Jumlah item</span>
@@ -674,13 +798,13 @@ function OrderPanel({ items = [] }) {
         </div>
       </div>
 
-      <button className="process-btn" onClick={handleCheckout} disabled={items.length === 0}>
-        Proses
+      <button className="process-btn" onClick={handleCheckout} disabled={items.length === 0 || processing}>
+        {processing ? "Memproses..." : "Proses"}
       </button>
     </aside>
   );
 }
-function Dashboard({ activeTab = "dashboard" }) {
+function Dashboard({ activeTab = "dashboard", onPlaceOrder }) {
   const [activeCat, setActiveCat] = useState("Kopi");
   const [searchQuery, setSearchQuery] = useState("");
   const [cartItems, setCartItems] = useState([]);
@@ -742,7 +866,7 @@ function Dashboard({ activeTab = "dashboard" }) {
           </div>
 
           {/* ── ORDER PANEL ── */}
-          <OrderPanel items={cartItems} />
+          <OrderPanel items={cartItems} onPlaceOrder={onPlaceOrder} onClearCart={() => setCartItems([])} />
         </div>
       )}
     </>

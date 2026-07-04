@@ -3,7 +3,7 @@ import { FaWhatsapp } from "react-icons/fa";
 export default function FloatingButton() {
   return (
     <a
-      href="https://wa.me/6281234567890?text=Halo%20Doge%20Caffe,%20saya%20ingin%20bertanya."
+      href="https://wa.me/6281234567890?text=Halo%20SudutRasa,%20saya%20ingin%20bertanya."
       target="_blank"
       rel="noopener noreferrer"
       className="

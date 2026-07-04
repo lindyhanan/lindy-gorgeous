@@ -265,7 +265,7 @@ export default function Header({ query, setQuery }) {
       `}</style>
 
       <div className="header-left">
-        <span className="brand-sub">Selamat datang di Doge Caffe Dashboard!</span>
+        <span className="brand-sub">Selamat datang di SudutRasa Dashboard!</span>
         <h1 className="brand-title">Always give the best service</h1>
       </div>
 

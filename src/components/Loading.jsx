@@ -5,7 +5,7 @@ export default function Loading() {
     <div className="loading-wrap" role="status" aria-label="Memuat halaman">
 
       <div className="loading-brand">
-        <p className="brand-label">Dogee Coffee</p>
+        <p className="brand-label">SudutRasa</p>
         <p className="sub-label">Lindy</p>
       </div>
 

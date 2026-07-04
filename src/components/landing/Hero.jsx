@@ -127,7 +127,7 @@ export default function Hero() {
 
         <div className="hero-inner">
           <div className="hero-text">
-            <p className="hero-label">Dogee Coffee Premium</p>
+            <p className="hero-label">SudutRasa Premium</p>
             <h1 className="hero-title">
               Fresh Coffee<br /><span>In The Morning</span>
             </h1>

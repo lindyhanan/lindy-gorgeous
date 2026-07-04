@@ -249,7 +249,7 @@ export default function Login() {
       <div className="auth-visual-banner">
         <div className="auth-banner-overlay"></div>
         <div className="auth-banner-content">
-          <h1>Dogee <br /><span>Cafe</span></h1>
+          <h1>Sudut <br /><span>Rasa</span></h1>
           <p>☕ Don't you remember your coffee?</p>
         </div>
       </div>
@@ -259,7 +259,7 @@ export default function Login() {
         <div className="auth-card-box">
           <div className="auth-header-zone">
             <h2>Welcome Back</h2>
-            <p>Masuk ke akun Dogee Coffee Anda.</p>
+            <p>Masuk ke akun SudutRasa Anda.</p>
           </div>
 
           {error && <div className="auth-error">{error}</div>}

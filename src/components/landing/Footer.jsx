@@ -168,7 +168,7 @@ export default function Footer() {
               <ul className="footer-links">
                 <li className="footer-contact-item"><span>📍</span> Jl. Senopati Raya No. 42B, Jakarta Selatan</li>
                 <li className="footer-contact-item"><span>📞</span> +62 812-3456-7890</li>
-                <li className="footer-contact-item"><span>✉️</span> support@dogecoffee.com</li>
+                <li className="footer-contact-item"><span>✉️</span> support@sudutrasa.com</li>
               </ul>
               <div className="footer-social">
                 <a href="#" title="Instagram">📸</a>

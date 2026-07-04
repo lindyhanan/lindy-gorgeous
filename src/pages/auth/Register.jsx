@@ -9,6 +9,7 @@ export default function Register() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -32,6 +33,7 @@ export default function Register() {
         options: {
           data: {
             full_name: fullName,
+            phone_number: phoneNumber,
           },
         },
       });
@@ -319,7 +321,7 @@ export default function Register() {
       <div className="auth-visual-banner">
         <div className="auth-banner-overlay"></div>
         <div className="auth-banner-content">
-          <h1>Dogee <br /><span>Cafe</span></h1>
+          <h1>Sudut <br /><span>Rasa</span></h1>
           <p>Daftar dan nikmati berbagai keuntungan member eksklusif!</p>
         </div>
       </div>
@@ -329,7 +331,7 @@ export default function Register() {
         <div className="auth-card-box">
           <div className="auth-header-zone">
             <h2>Create Account</h2>
-            <p>Daftar akun member Dogee Coffee.</p>
+            <p>Daftar akun member SudutRasa.</p>
           </div>
 
           {error && <div className="auth-error">{error}</div>}
@@ -372,6 +374,18 @@ export default function Register() {
                 disabled={loading}
                 required
                 minLength={6}
+                className="auth-input-control" 
+              />
+            </div>
+
+            {/* Phone Number */}
+            <div className="auth-input-group">
+              <input 
+                type="tel" 
+                placeholder="Nomor HP (untuk poin loyalty)" 
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+                disabled={loading}
                 className="auth-input-control" 
               />
             </div>

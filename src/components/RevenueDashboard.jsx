@@ -5,27 +5,51 @@ import {
   PieChart, Pie, Cell, Legend 
 } from "recharts";
 
-function RevenueDashboard() {
-  // 1. Data Grafik Batang (Harian)
-  const barData = [
-    { name: "Sen", Pendapatan: 4.0 },
-    { name: "Sel", Pendapatan: 6.5 },
-    { name: "Rab", Pendapatan: 5.0 },
-    { name: "Kam", Pendapatan: 8.5 },
-    { name: "Jum", Pendapatan: 7.0 },
-    { name: "Sab", Pendapatan: 9.5 },
-    { name: "Min", Pendapatan: 6.0 },
-  ];
+function RevenueDashboard({ transactions = [] }) {
+  // Days order for bar chart
+  const dayNames = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
 
-  // 2. Data Pie Chart (Kategori)
-  const pieData = [
-    { name: "Kopi", value: 55 },
-    { name: "Non-Kopi", value: 30 },
-    { name: "Makanan", value: 15 },
-  ];
+  // 1. Build barData from real transactions
+  const barData = dayNames.map((day) => {
+    const dayTotal = transactions
+      .filter((t) => t.date === day)
+      .reduce((sum, t) => sum + (t.amount || 0), 0);
+    return { name: day, Pendapatan: Math.round(dayTotal / 10000) / 100 }; // dalam 10rb-an
+  });
 
-  // Warna kustom agar serasi dengan tema kasir/cafe Anda
-  const COLORS = ["#92634e", "#b07e66", "#cdc5b9"];
+  // 2. Build pieData from real transactions by category
+  const categoryTotals = {};
+  transactions.forEach((t) => {
+    const cat = t.category || "Lainnya";
+    categoryTotals[cat] = (categoryTotals[cat] || 0) + (t.amount || 0);
+  });
+  const totalAmount = Object.values(categoryTotals).reduce((s, v) => s + v, 0) || 1;
+  const pieData = Object.entries(categoryTotals).map(([name, value]) => ({
+    name,
+    value: Math.round((value / totalAmount) * 100),
+  }));
+  // Fallback if no data
+  if (pieData.length === 0) {
+    pieData.push({ name: "Belum ada data", value: 100 });
+  }
+
+  // 3. Calculate stats from real transactions
+  const days = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
+  const todayName = days[new Date().getDay()];
+  const todayRevenue = transactions
+    .filter((t) => t.date === todayName)
+    .reduce((sum, t) => sum + (t.amount || 0), 0);
+
+  const weekRevenue = transactions
+    .filter((t) => days.includes(t.date))
+    .reduce((sum, t) => sum + (t.amount || 0), 0);
+
+  const monthRevenue = transactions
+    .reduce((sum, t) => sum + (t.amount || 0), 0);
+
+  // Warna kustom
+  const COLORS = ["#92634e", "#b07e66", "#cdc5b9", "#d87d56", "#a19a93"];
+  const fmtRp = (n) => "Rp " + n.toLocaleString("id-ID");
 
   return (
     <div className="crm-dashboard-wrapper">
@@ -88,9 +112,9 @@ function RevenueDashboard() {
             <span className="crm-card-subtitle">Performa Finansial</span>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'center' }}>
-            <div className="crm-analytics-row"><span>Today</span><strong>Rp 1.250.000</strong></div>
-            <div className="crm-analytics-row"><span>This Week</span><strong>Rp 8.700.000</strong></div>
-            <div className="crm-analytics-row"><span>This Month</span><strong>Rp 32.000.000</strong></div>
+            <div className="crm-analytics-row"><span>Today</span><strong>{fmtRp(todayRevenue)}</strong></div>
+            <div className="crm-analytics-row"><span>This Week</span><strong>{fmtRp(weekRevenue)}</strong></div>
+            <div className="crm-analytics-row"><span>This Month</span><strong>{fmtRp(monthRevenue)}</strong></div>
           </div>
         </div>
 

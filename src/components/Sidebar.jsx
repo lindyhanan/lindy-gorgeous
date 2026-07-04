@@ -48,7 +48,7 @@ export default function Sidebar() {
     width: 56px;
     height: 56px;
     border-radius: 20px;
-    background-color: #92634e; /* Cokelat khas Doge Caffe */
+    background-color: #92634e; /* Cokelat khas SudutRasa */
     color: #ffffff;
     display: flex;
     justify-content: center;
