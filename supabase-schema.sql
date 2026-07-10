@@ -66,6 +66,7 @@ CREATE TABLE public.newsletters (
 -- ============================================================
 
 -- Function: auto-create profile when user signs up
+-- Uses EXCEPTION block so trigger failure won't block user registration (error 500)
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER
 LANGUAGE plpgsql
@@ -81,10 +82,15 @@ BEGIN
         NULLIF(NEW.raw_user_meta_data->>'phone_number', '')
     );
     RETURN NEW;
+EXCEPTION WHEN OTHERS THEN
+    -- Jangan blokir registrasi meskipun trigger gagal
+    -- Profile akan dibuat dari client-side sebagai fallback
+    RAISE WARNING 'handle_new_user trigger gagal untuk user %: %', NEW.id, SQLERRM;
+    RETURN NEW;
 END;
 $$;
 
--- Trigger: run after a new auth user is confirmed
+-- Trigger: run after a new auth user is created
 CREATE OR REPLACE TRIGGER on_auth_user_created
     AFTER INSERT ON auth.users
     FOR EACH ROW

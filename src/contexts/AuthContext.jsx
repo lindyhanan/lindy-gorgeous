@@ -18,6 +18,7 @@ export function AuthProvider({ children }) {
   const [isLoading, setIsLoading] = useState(true);
 
   // Fetch profile from profiles table after auth state change
+  // Auto-create profile as fallback if trigger fails
   const fetchProfile = async (userId) => {
     if (!userId) {
       setProfile(null);
@@ -32,7 +33,10 @@ export function AuthProvider({ children }) {
 
       if (error) {
         // Profile might not exist yet (trigger hasn't fired)
-        if (error.code !== "PGRST116") {
+        if (error.code === "PGRST116") {
+          // Fallback: buat profile dari client jika trigger gagal
+          await createProfileFallback(userId);
+        } else {
           console.error("Error fetching profile:", error.message);
         }
         return;
@@ -40,6 +44,40 @@ export function AuthProvider({ children }) {
       setProfile(data);
     } catch (err) {
       console.error("Error fetching profile:", err);
+    }
+  };
+
+  // Client-side fallback: create profile if trigger failed
+  const createProfileFallback = async (userId) => {
+    try {
+      // Get user metadata from auth
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const fullName = user.user_metadata?.full_name || user.email?.split("@")[0] || "User";
+      const phoneNumber = user.user_metadata?.phone_number || null;
+
+      const { data, error } = await supabase
+        .from("profiles")
+        .upsert({
+          id: userId,
+          full_name: fullName,
+          role: "MEMBER",
+          tier: "SILVER",
+          phone_number: phoneNumber,
+        }, { onConflict: "id", ignoreDuplicates: false })
+        .select()
+        .single();
+
+      if (error) {
+        console.error("Fallback create profile gagal:", error.message);
+        return;
+      }
+
+      setProfile(data);
+      console.log("✅ Profile berhasil dibuat via client fallback");
+    } catch (err) {
+      console.error("Fallback create profile error:", err);
     }
   };
 

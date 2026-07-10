@@ -40,14 +40,22 @@ export default function Register() {
 
       if (error) throw error;
 
+      // Jika email confirmation aktif & user sudah terdaftar
       if (data.user?.identities?.length === 0) {
         alert("Email ini sudah terdaftar. Silakan login.");
         navigate("/login");
         return;
       }
 
-      alert("✅ Registrasi berhasil! Silakan cek email Anda untuk konfirmasi, lalu login.");
-      navigate("/login");
+      // Email confirmation nonaktif → langsung login & redirect ke dashboard
+      if (data.session) {
+        alert("✅ Registrasi berhasil! Selamat datang.");
+        navigate("/member");
+      } else {
+        // Fallback: kalau email confirmation masih nyala
+        alert("✅ Registrasi berhasil! Silakan cek email Anda untuk konfirmasi.");
+        navigate("/login");
+      }
     } catch (err) {
       setError(err.message);
     } finally {
